@@ -100,3 +100,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *)
      */
 };
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LSFT_T(KC_T):
+        case RSFT_T(KC_N):
+        case LT(COMPOSE, KC_TAB):
+            return TAPPING_TERM_SFT;
+        default:
+            return TAPPING_TERM;
+    }
+}
