@@ -3,6 +3,9 @@
 
 #pragma once
 
+#define MATRIX_ROWS  8
+#define MATRIX_COLS  6
+
 /*
  * Feature disable options
  *  These options are also useful to firmware size reduction.
