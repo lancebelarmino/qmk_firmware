@@ -1,1 +1,2 @@
+#undef NO_ACTION_LAYER
 #undef NO_ACTION_TAPPING
