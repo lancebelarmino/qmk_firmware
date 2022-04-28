@@ -5,11 +5,14 @@
     "bootloader": "caterina",
     "diode_direction": "COL2ROW",
     "features": {
-        "bootmagic": true,
+        "magic": false,
+        "bootmagic": false,
+        "space_cadet": false,
+        "grave_esc": false,
         "command": false,
         "console": false,
-        "extrakey": true,
-        "mousekey": true,
+        "extrakey": false,
+        "mousekey": false,
         "nkro": true
     },
     "matrix_pins": {
@@ -17,7 +20,7 @@
         "rows": ["D4", "C6", "D7", "E6"]
     },
     "processor": "atmega32u4",
-    "url": "",
+    "url": "https://github.com/pashutk/chocofi",
     "usb": {
         "device_version": "1.0.0",
         "pid": "0x0000",
