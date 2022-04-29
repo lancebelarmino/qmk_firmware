@@ -14,6 +14,7 @@ enum {
 enum {
   COLEMAK = 0,
   MOD_ARR,
+  NAVIGAT,
   FUN_NUM,
   SYMBOLS,
   WNDWMGR,
@@ -49,6 +50,7 @@ enum custom_keycodes {
 #define KC_BSP_ LT(MOD_ARR, KC_BSPC)
 #define KC_ESC_ LT(FUN_NUM, KC_ESC)
 #define KC_D_   LT(SYMBOLS, KC_D)
+#define KC_NAV  LT(NAVIGAT, KC_NO)
 //   Right
 //     Home-row mods
 #define KC_N_ RSFT_T(KC_N)
@@ -97,14 +99,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,                               KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN,
         KC_A_,   KC_R_,   KC_S_,   KC_T_,   KC_G,                               KC_M,    KC_N_,   KC_E_,   KC_I_,   KC_O_,
         KC_Z,    KC_X,    KC_C,    KC_D_,   KC_V,                               KC_K,    KC_H_,   KC_COMM, KC_DOT,  KC_SLSH,
-                                   KC_WM, KC_BSP_, KC_ESC_,            KC_ENT_, KC_SPC_, KC_TAB_
+                                   KC_WM,   KC_BSP_, KC_ESC_,          KC_ENT_, KC_SPC_, KC_TAB_
     ),
 
     [MOD_ARR] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
         XXXX,    XXXX,    XXXX,    KC_CAPS, XXXX,                               KC_LEFT, KC_DOWN, KC_UP,   KC_RIGHT,XXXX,
-        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    XXXX,    XXXX,    KC_NAV,  XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    XXXX,    KC_DEL,  XXXX,             XXXX,    XXXX,    XXXX
+    ),
+    [NAVIGAT] = LAYOUT_split_3x5_3(
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                KC_HOME, KC_PGDN, KC_PGUP, KC_END,  XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                  XXXX,    XXXX,     XXXX,             XXXX,    XXXX,    XXXX
     ),
     [FUN_NUM] = LAYOUT_split_3x5_3(
         XXXX,    KC_F4,   KC_F3,   KC_F2,   KC_F1,                              XXXX,    KC_7,    KC_8,    KC_9,    KC_MINS,
@@ -119,16 +127,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    XXXX,    XXXX,    XXXX,             XXXX,    XXXX,    XXXX
     ),
     [COMPOSE] = LAYOUT_split_3x5_3(
-       KC_AE,   XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    KC_UE,   KC_OE,
-       XXXX,    XXXX,    KC_SZ,   XXXX,    XXXX,                               XXXX,    XXXX,    KC_EE,   KC_IE,    XXXX,
-       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                  XXXX,    XXXX,    XXXX,             XXXX,    XXXX,    XXXX
+       KC_AE,   XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    KC_UE,   KC_OE,
+       XXXX,    XXXX,    KC_SZ,   XXXX,    XXXX,                                XXXX,    XXXX,    KC_EE,   KC_IE,    XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                  XXXX,    XXXX,     XXXX,             XXXX,    XXXX,    XXXX
     ),
     [WNDWMGR] = LAYOUT_split_3x5_3(
-       KC_GNM3, KC_GNM4, KC_OSX,  KC_WIN,  XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               KC_LFTD, KC_DWND, KC_UPD,  KC_RGTD, XXXX,
-       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                  XXXX,    XXXX,    XXXX,             XXXX,    XXXX,    XXXX
+       KC_GNM3, KC_GNM4, KC_OSX,  KC_WIN,  XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                KC_LFTD, KC_DWND, KC_UPD,  KC_RGTD, XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                  XXXX,    XXXX,     XXXX,             XXXX,    XXXX,    XXXX
     )
     /*[<TMPL>] = LAYOUT_split_3x5_3(
      *   XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
