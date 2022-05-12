@@ -71,8 +71,8 @@ enum custom_keycodes {
 #define KC_WM LT(WNDWMGR, WM_EXPOSEE)
 #define KC_LFTD WM_LEFT_DESK
 #define KC_RGTD WM_RGHT_DESK
-#define KC_UPD WM_UPPR_DESK
-#define KC_DWND WM_LOWR_DESK
+#define KC_UPRD WM_UPPR_DESK
+#define KC_LWRD WM_LOWR_DESK
 //  Compose
 #define KC_AE RALT(KC_Q)
 #define KC_SZ RALT(KC_S)
@@ -135,7 +135,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
     [WNDWMGR] = LAYOUT_split_3x5_3(
        KC_GNM3, KC_GNM4, KC_OSX,  KC_WIN,  XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                KC_LFTD, KC_DWND, KC_UPD,  KC_RGTD, XXXX,
+       XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                KC_LFTD, KC_LWRD, KC_UPRD, KC_RGTD, XXXX,
        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                                XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                   XXXX,    XXXX,     XXXX,             XXXX,    XXXX,    XXXX
     )
