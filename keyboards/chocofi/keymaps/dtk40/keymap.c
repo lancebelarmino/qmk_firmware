@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include <stdio.h>
+#include "features/caps_word.h"
 
 enum {
     GNOME_3 = 0,
@@ -177,6 +178,8 @@ bool get_retro_tapping(uint16_t keycode, keyrecord_t *record) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (!process_caps_word(keycode, record)) { return false; }
+
   switch (keycode) {
   case WM_GNOME_3:
     if (record->event.pressed) {
