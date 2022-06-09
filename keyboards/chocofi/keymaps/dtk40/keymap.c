@@ -49,7 +49,7 @@ enum custom_keycodes {
 //     Layer toggles
 #define KC_WM   LT(WNDWMGR, WM_EXPOSEE)
 #define KC_BSP_ LT(MOD_ARR, KC_BSPC)
-#define KC_ESC_ LT(FUN_NUM, KC_ESC)
+#define KC_TAB_ LT(FUN_NUM, KC_TAB)
 #define KC_D_   LT(SYMBOLS, KC_D)
 #define KC_NAV  LT(NAVIGAT, KC_NO)
 //   Right
@@ -61,7 +61,7 @@ enum custom_keycodes {
 //     Layer toggles
 #define KC_ENT_ LT(FUN_NUM, KC_ENT)
 #define KC_SPC_ LT(MOD_ARR, KC_SPC)
-#define KC_TAB_ LT(COMPOSE, KC_TAB)
+#define KC_ESC_ LT(COMPOSE, KC_ESC)
 #define KC_H_   LT(SYMBOLS, KC_H)
 //  Window Manager
 #define KC_GNM3 WM_GNOME_3
@@ -100,7 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_F,    KC_P,    KC_B,                               KC_J,    KC_L,    KC_U,    KC_Y,    KC_SCLN,
         KC_A_,   KC_R_,   KC_S_,   KC_T_,   KC_G,                               KC_M,    KC_N_,   KC_E_,   KC_I_,   KC_O_,
         KC_Z,    KC_X,    KC_C,    KC_D_,   KC_V,                               KC_K,    KC_H_,   KC_COMM, KC_DOT,  KC_SLSH,
-                                   KC_WM,   KC_BSP_, KC_ESC_,          KC_ENT_, KC_SPC_, KC_TAB_
+                                   KC_WM,   KC_BSP_, KC_TAB_,          KC_ENT_, KC_SPC_, KC_ESC_
     ),
 
     [MOD_ARR] = LAYOUT_split_3x5_3(
@@ -152,7 +152,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LSFT_T(KC_T):
         case RSFT_T(KC_N):
-        case LT(COMPOSE, KC_TAB):
+        case LT(COMPOSE, KC_ESC):
             return TAPPING_TERM_SFT;
         default:
             return TAPPING_TERM;
@@ -161,7 +161,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
-    case LT(COMPOSE, KC_TAB):
+    case LT(COMPOSE, KC_ESC):
       return true;
     default:
       return false;
