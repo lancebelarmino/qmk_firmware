@@ -24,12 +24,17 @@ enum layers {
   MOUSE,
   FUNC,
   GAMING,
+  GAMING_FUNC,
+  MENU,
+  SYM
 };
 
 enum tapdance_keycodes {
     TD_CAPS,
     TD_NAV,
-    TD_ESC
+    TD_ESC,
+    TD_BSLS,
+    TD_DLR,
 };
 
 enum custom_keycodes {
@@ -48,7 +53,9 @@ enum {
 tap_dance_action_t tap_dance_actions[] = {
     [TD_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_LSFT, KC_CAPS),
     [TD_NAV] = ACTION_TAP_DANCE_DOUBLE(MO(NAV), MO(MOUSE)),
-    [TD_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_ESC, KC_TILD),
+    [TD_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_GRAVE, KC_ESC),
+    [TD_BSLS] = ACTION_TAP_DANCE_DOUBLE(KC_BSLS, KC_AT),
+    [TD_DLR] = ACTION_TAP_DANCE_DOUBLE(KC_DLR, KC_CIRC),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -57,43 +64,72 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
         TO(NAV),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,
         TD(TD_CAPS),        KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
-        KC_LCTL,  KC_LOPTN, KC_LGUI,                               KC_SPC,                                 TO(GAMING),TO(NAV),  OSL(FUNC),TO(MAC_BASE)),
+        KC_LCTL,  KC_LOPTN, KC_LGUI,                                KC_SPC,                                 TO(GAMING),TO(NAV), TO(FUNC),TO(MAC_BASE)),
 
     [WIN_BASE] = LAYOUT_61_ansi(
         TD(TD_ESC),KC_1,    KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
-        TO(NAV),  KC_A,    KC_S,     KC_D,     KC_F,     KC_G,      KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,
+        TT(NAV),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     LT(SYM, KC_SCLN),LT(MENU, KC_QUOT),KC_ENT,
         TD(TD_CAPS),        KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
-        KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 TO(GAMING),TO(NAV), OSL(FUNC),TO(WIN_BASE)),
+        KC_LCTL,  KC_LGUI, KC_LALT,                                KC_SPC,                                 TO(GAMING),TO(NAV), TO(FUNC),TO(WIN_BASE)),
+
+    // [WIN_BASE] = LAYOUT_61_ansi(
+    //     TD(TD_ESC),KC_1,    KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
+    //     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
+    //     TT(NAV),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     TT(SYM),  LT(MENU, KC_QUOT),  KC_ENT,
+    //     TD(TD_CAPS),        KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
+    //     KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 TO(GAMING),TO(NAV), TO(FUNC), TO(WIN_BASE)),
+
+    [MENU] = LAYOUT_61_ansi(
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______, _______,   _______,  _______,
+        KC_TAB,   KC_F1,    KC_F3,    KC_F12,   TO(MOUSE),_______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,                                _______,                                _______,  _______,  _______,  _______),
+        
+    [FUNC] = LAYOUT_61_ansi(
+        RGB_TOG,  RGB_VAI,  RGB_VAD,  RGB_HUI,  RGB_HUD,  RGB_SAI,  RGB_SAD,  RGB_SPI,  RGB_SPD,  NK_TOGG,  RGB_MOD,  _______,  _______,  _______,
+        _______,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_BSLS,
+        TO(WIN_BASE),KC_F12,M_QUIT,   KC_F3,    M_REFRESH,KC_PSCR,  KC_H,     KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_SCLN,  _______,            KC_ENT,
+        _______,            _______,  KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
+        _______,  _______,  _______,                                _______,                                TO(GAMING),TO(NAV), TO(FUNC), TO(WIN_BASE)),
+        
+    [SYM] = LAYOUT_61_ansi(
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        KC_0,     KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_TILD,  _______,  _______,
+        TO(WIN_BASE),KC_LPRN,KC_LBRC, KC_LCBR,  KC_EQL,   KC_AMPR,  TD(TD_DLR),KC_COLN, KC_SCLN,  KC_MINUS, KC_PLUS,  KC_ASTR,            KC_ENT,
+        TD(TD_CAPS),        KC_RPRN,  KC_RBRC,  KC_RCBR,  KC_EXLM,  TD(TD_BSLS),KC_UNDS,KC_HASH,  KC_PIPE,  KC_PERC,  _______,            KC_RSFT,
+        KC_LCTL,  KC_LOPTN, KC_LGUI,                                KC_SPC,                                 TO(GAMING),TO(NAV), TO(MOUSE),TO(WIN_BASE)),
 
     [GAMING] = LAYOUT_61_ansi(
         KC_ESC,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
         KC_EQL,   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,
-        TD(TD_CAPS),        KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
-        KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 TO(GAMING),TO(NAV), OSL(FUNC),TO(WIN_BASE)),
+        KC_LSFT,  KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
+        KC_LCTL,  KC_LGUI,  KC_LALT,                                KC_SPC,                                 TO(GAMING),TO(NAV), TO(FUNC),TO(WIN_BASE)),
 
     [NAV] = LAYOUT_61_ansi(
         KC_ESC,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        KC_TAB,   KC_PGUP,  KC_PGDN,  KC_HOME,  KC_END,  _______,   _______,  _______,  KC_UP,    _______,  _______,  _______,  _______,  _______,
-        TO(MOUSE),_______,  _______,  _______,  KC_F,     _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, _______,  _______,            KC_ENT,
-        _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_RSFT,
-        KC_LCTL,  KC_LGUI,  KC_LALT,                                _______,                                TO(GAMING),TO(NAV),  TO(FUNC),TO(WIN_BASE)),
+        KC_TAB,   KC_HOME,  KC_END,   KC_WH_U,  KC_WH_D,  _______,   _______,  _______,  KC_UP,    _______,  _______,  _______,  _______,  _______,
+        TO(MOUSE),_______,  _______,  _______,  KC_F,     _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, _______,  _______,            TO(WIN_BASE),
+        KC_LSFT,            KC_CUT,  KC_COPY,   KC_PASTE,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_RSFT,
+        KC_LCTL,  KC_LGUI,  KC_LALT,                                _______,                                TO(GAMING),TO(NAV), TO(FUNC), TO(WIN_BASE)),
+
+    [GAMING_FUNC] = LAYOUT_61_ansi(
+        TO(GAMING),KC_F1,   KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,  _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,                                _______,                                _______,  _______,  _______,  _______),
 
     [MOUSE] = LAYOUT_61_ansi(
         KC_ESC,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        KC_TAB,   KC_PGUP,  KC_PGDN,  KC_HOME,  KC_END,   _______,  _______,  _______,  KC_MS_U,  _______,  _______,  _______,  _______,  _______,
-        TO(WIN_BASE),KC_ACL2,KC_ACL0, KC_BTN1,  KC_BTN2,  KC_ESC,   KC_WH_U,  KC_MS_L,  KC_MS_D,  KC_MS_R,  KC_WH_D,  _______,            KC_ENT,
+        KC_TAB,   _______,  KC_ACL2,  KC_WH_U,  KC_WH_D,   _______, _______,  _______,  KC_MS_U,  _______,  _______,  _______,  _______,  _______,
+        TO(NAV),  KC_ACL1,  KC_ACL0,  KC_BTN1,  KC_BTN2,  KC_ESC,   _______,  KC_MS_L,  KC_MS_D,  KC_MS_R,  _______,  _______,            TO(WIN_BASE),
         _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_RSFT,
-        KC_LCTL,  KC_LGUI,  KC_LALT,                                _______,                                TO(GAMING),TO(NAV), OSL(FUNC),TO(WIN_BASE)),
-    
-    [FUNC] = LAYOUT_61_ansi(
-        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,   KC_BSLS,
-        RGB_TOG,  KC_F12,   M_QUIT,   KC_D,     M_REFRESH,KC_G,     KC_H,     KC_LEFT,  KC_DOWN,  KC_RIGHT, KC_SCLN,  KC_QUOT,            KC_ENT,
-        _______,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            KC_RSFT,
-        _______,  _______,  _______,                                _______,                                TO(GAMING),TO(NAV), OSL(FUNC),TO(WIN_BASE)),
+        KC_LCTL,  KC_LGUI,  KC_LALT,                                _______,                                TO(GAMING),TO(NAV), TO(FUNC), TO(WIN_BASE)),
 };
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
       // TODO: Fix mac os refresh
