@@ -14,8 +14,8 @@ from qmk.git import git_get_username
 from qmk.json_schema import load_jsonschema
 from qmk.path import keyboard
 from qmk.json_encoders import InfoJSONEncoder
-from qmk.json_schema import deep_update
-from qmk.constants import MCU2BOOTLOADER
+from qmk.json_schema import deep_update, json_load
+from qmk.constants import MCU2BOOTLOADER, QMK_FIRMWARE
 
 COMMUNITY = Path('layouts/default/')
 TEMPLATE = Path('data/templates/keyboard/')
@@ -23,13 +23,14 @@ TEMPLATE = Path('data/templates/keyboard/')
 # defaults
 schema = dotty(load_jsonschema('keyboard'))
 mcu_types = sorted(schema["properties.processor.enum"], key=str.casefold)
+dev_boards = sorted(schema["properties.development_board.enum"], key=str.casefold)
 available_layouts = sorted([x.name for x in COMMUNITY.iterdir() if x.is_dir()])
 
 
 def mcu_type(mcu):
     """Callable for argparse validation.
     """
-    if mcu not in mcu_types:
+    if mcu not in (dev_boards + mcu_types):
         raise ValueError
     return mcu
 
@@ -73,6 +74,10 @@ def replace_placeholders(src, dest, tokens):
     dest.write_text(content)
 
 
+def replace_string(src, token, value):
+    src.write_text(src.read_text().replace(token, value))
+
+
 def augment_community_info(src, dest):
     """Splice in any additional data into info.json
     """
@@ -101,7 +106,7 @@ def augment_community_info(src, dest):
         item["matrix"] = [int(item["y"]), int(item["x"])]
 
     # finally write out the updated info.json
-    dest.write_text(json.dumps(info, cls=InfoJSONEncoder))
+    dest.write_text(json.dumps(info, cls=InfoJSONEncoder, sort_keys=True))
 
 
 def _question(*args, **kwargs):
@@ -128,7 +133,7 @@ def _question(*args, **kwargs):
 def prompt_keyboard():
     prompt = """{fg_yellow}Name Your Keyboard Project{style_reset_all}
 For more infomation, see:
-https://docs.qmk.fm/#/hardware_keyboard_guidelines?id=naming-your-keyboardproject
+https://docs.qmk.fm/hardware_keyboard_guidelines#naming-your-keyboard-project
 
 Keyboard Name? """
 
@@ -176,14 +181,14 @@ https://docs.qmk.fm/#/compatible_microcontrollers
 
 MCU? """
     # remove any options strictly used for compatibility
-    filtered_mcu = [x for x in mcu_types if not any(xs in x for xs in ['cortex', 'unknown'])]
+    filtered_mcu = [x for x in (dev_boards + mcu_types) if not any(xs in x for xs in ['cortex', 'unknown'])]
 
     return choice(prompt, filtered_mcu, default=filtered_mcu.index("atmega32u4"))
 
 
 @cli.argument('-kb', '--keyboard', help='Specify the name for the new keyboard directory', arg_only=True, type=keyboard_name)
 @cli.argument('-l', '--layout', help='Community layout to bootstrap with', arg_only=True, type=layout_type)
-@cli.argument('-t', '--type', help='Specify the keyboard MCU type', arg_only=True, type=mcu_type)
+@cli.argument('-t', '--type', help='Specify the keyboard MCU type (or "development_board" preset)', arg_only=True, type=mcu_type)
 @cli.argument('-u', '--username', help='Specify your username (default from Git config)', dest='name')
 @cli.argument('-n', '--realname', help='Specify your real name if you want to use that. Defaults to username', arg_only=True)
 @cli.subcommand('Creates a new keyboard directory')
@@ -194,12 +199,6 @@ def new_keyboard(cli):
     cli.echo('')
 
     kb_name = cli.args.keyboard if cli.args.keyboard else prompt_keyboard()
-    user_name = cli.config.new_keyboard.name if cli.config.new_keyboard.name else prompt_user()
-    real_name = cli.args.realname or cli.config.new_keyboard.name if cli.args.realname or cli.config.new_keyboard.name else prompt_name(user_name)
-    default_layout = cli.args.layout if cli.args.layout else prompt_layout()
-    mcu = cli.args.type if cli.args.type else prompt_mcu()
-    bootloader = select_default_bootloader(mcu)
-
     if not validate_keyboard_name(kb_name):
         cli.log.error('Keyboard names must contain only {fg_cyan}lowercase a-z{fg_reset}, {fg_cyan}0-9{fg_reset}, and {fg_cyan}_{fg_reset}! Please choose a different name.')
         return 1
@@ -207,6 +206,26 @@ def new_keyboard(cli):
     if keyboard(kb_name).exists():
         cli.log.error(f'Keyboard {{fg_cyan}}{kb_name}{{fg_reset}} already exists! Please choose a different name.')
         return 1
+
+    user_name = cli.config.new_keyboard.name if cli.config.new_keyboard.name else prompt_user()
+    real_name = cli.args.realname or cli.config.new_keyboard.name if cli.args.realname or cli.config.new_keyboard.name else prompt_name(user_name)
+    default_layout = cli.args.layout if cli.args.layout else prompt_layout()
+    mcu = cli.args.type if cli.args.type else prompt_mcu()
+
+    # Preprocess any development_board presets
+    if mcu in dev_boards:
+        defaults_map = json_load(Path('data/mappings/defaults.hjson'))
+        board = defaults_map['development_board'][mcu]
+
+        mcu = board['processor']
+        bootloader = board['bootloader']
+    else:
+        bootloader = select_default_bootloader(mcu)
+
+    detach_layout = False
+    if default_layout == 'none of the above':
+        default_layout = "ortho_4x4"
+        detach_layout = True
 
     tokens = {  # Comment here is to force multiline formatting
         'YEAR': str(date.today().year),
@@ -223,10 +242,6 @@ def new_keyboard(cli):
         for key, value in tokens.items():
             cli.echo(f"    {key.ljust(10)}:   {value}")
 
-    # TODO: detach community layout and rename to just "LAYOUT"
-    if default_layout == 'none of the above':
-        default_layout = "ortho_4x4"
-
     # begin with making the deepest folder in the tree
     keymaps_path = keyboard(kb_name) / 'keymaps/'
     keymaps_path.mkdir(parents=True)
@@ -241,9 +256,14 @@ def new_keyboard(cli):
 
     # merge in infos
     community_info = Path(COMMUNITY / f'{default_layout}/info.json')
-    augment_community_info(community_info, keyboard(kb_name) / community_info.name)
+    augment_community_info(community_info, keyboard(kb_name) / 'keyboard.json')
+
+    # detach community layout and rename to just "LAYOUT"
+    if detach_layout:
+        replace_string(keyboard(kb_name) / 'keyboard.json', 'LAYOUT_ortho_4x4', 'LAYOUT')
+        replace_string(keymaps_path / 'default/keymap.c', 'LAYOUT_ortho_4x4', 'LAYOUT')
 
     cli.log.info(f'{{fg_green}}Created a new keyboard called {{fg_cyan}}{kb_name}{{fg_green}}.{{fg_reset}}')
-    cli.log.info(f'To start working on things, `cd` into {{fg_cyan}}keyboards/{kb_name}{{fg_reset}},')
-    cli.log.info('or open the directory in your preferred text editor.')
-    cli.log.info(f"And build with {{fg_yellow}}qmk compile -kb {kb_name} -km default{{fg_reset}}.")
+    cli.log.info(f"Build Command: {{fg_yellow}}qmk compile -kb {kb_name} -km default{{fg_reset}}.")
+    cli.log.info(f'Project Location: {{fg_cyan}}{QMK_FIRMWARE}/{keyboard(kb_name)}{{fg_reset}},')
+    cli.log.info("{{fg_yellow}}Now update the config files to match the hardware!{{fg_reset}}")
