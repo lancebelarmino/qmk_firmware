@@ -8,3 +8,6 @@
 
 #define USE_SERIAL
 #define SOFT_SERIAL_PIN D2
+
+#define TAPPING_TERM 175
+#define TAPPING_TERM_PER_KEY

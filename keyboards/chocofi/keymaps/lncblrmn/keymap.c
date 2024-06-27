@@ -1,6 +1,7 @@
 #include QMK_KEYBOARD_H
 
 #include "oneshot.h"
+#include "swapper.h"
 
 #define LA_NUM MO(NUM)
 #define LA_NAV MO(NAV)
@@ -16,19 +17,103 @@ enum layers {
     FUN,
 };
 
-enum macros {
-    MR_FW = SAFE_RANGE, // Forward by word
-    MR_BW, // Backward by word
-    MR_ST, // Spotlight
-    MR_NT, // New tab
-};
-
 enum keycodes {
-    // Custom oneshot mod implementation with no timers.
-    OS_SHFT = SAFE_RANGE,
+    // Macros
+    MR_FW = SAFE_RANGE,
+    MR_BW,
+    MR_ST,
+    MR_NT,
+    MR_X,
+    MR_C,
+    MR_V,
+    MR_F,
+    MR_S,
+
+    // Swapper
+    SW_WIN,
+
+    // One Shot Keys
+    OS_SHFT,
     OS_CTRL,
     OS_ALT,
     OS_CMD
+};
+
+enum {
+    // Tap Dance
+    TD_Z,
+    TD_T,
+};
+
+void dance_undo_finished(tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+        case 1:
+            register_code(KC_LGUI);
+            register_code(KC_Z);
+            break;
+        case 2:
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);  
+            register_code(KC_Z);
+            break;
+        default:
+            break;
+    }
+}
+
+void dance_undo_reset(tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+        case 1:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_Z);
+            break;
+        case 2:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_LSFT);  
+            unregister_code(KC_Z);
+            break;
+        default:
+            break;
+    }
+    reset_tap_dance(state);   
+}
+
+void dance_tab_finished(tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+        case 1:
+            register_code(KC_LGUI);
+            register_code(KC_W);
+            break;
+        case 2:
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);
+            register_code(KC_T);
+            break;
+        default:
+            break;
+    }
+}
+
+void dance_tab_reset(tap_dance_state_t *state, void *user_data) {
+    switch (state->count) {
+        case 1:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_W);
+            break;
+        case 2:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_T);
+            break;
+        default:
+            break;
+    }
+    reset_tap_dance(state);
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_Z] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_undo_finished, dance_undo_reset),
+    [TD_T] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_tab_finished, dance_tab_reset),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -47,10 +132,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
-        KC_ESC,  XXXX,    XXXX,    XXXX,    MR_NT,                              XXXX,    KC_HOME, KC_UP,   KC_END,  KC_DEL,
+        KC_ESC,  XXXX,    SW_WIN,  TD(TD_T),MR_NT,                              MR_F,    KC_HOME, KC_UP,   KC_END,  KC_DEL,
         OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_TAB,                             KC_WH_U, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,
-        XXXX,    XXXX,    XXXX,    XXXX,    KC_CAPS,                            KC_WH_D, MR_FW,   MR_BW,   XXXX,    XXXX,
-                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  MR_ST,   XXXX
+        TD(TD_Z),MR_X,    MR_C,    MR_V,    KC_CAPS,                            KC_WH_D, MR_FW,   MR_BW,   XXXX,    XXXX,
+                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  MR_ST,   MR_S
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
@@ -96,12 +181,19 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     }
 }
 
+bool sw_win_active = false;
+
 oneshot_state os_shft_state = os_up_unqueued;
 oneshot_state os_ctrl_state = os_up_unqueued;
 oneshot_state os_alt_state = os_up_unqueued;
 oneshot_state os_cmd_state = os_up_unqueued;
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  update_swapper(
+        &sw_win_active, KC_LGUI, KC_TAB, SW_WIN,
+        keycode, record
+    );
+
     update_oneshot(
         &os_shft_state, KC_LSFT, OS_SHFT,
         keycode, record
@@ -119,47 +211,97 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         keycode, record
     );
 
-    // switch (keycode) {
-    //   case MR_FW:
-    //       // Forward by word
-    //       if (record->event.pressed) {
-    //         register_code(KC_LGUI);
-    //         register_code(KC_RIGHT);
-    //       } else {
-    //         unregister_code(KC_LGUI);
-    //         unregister_code(KC_RIGHT);
-    //       }
-    //       break;
-    //   case MR_BW:
-    //       // Backward by word
-    //       if (record->event.pressed) {
-    //         register_code(KC_LGUI);
-    //         register_code(KC_LEFT);
-    //       } else {
-    //         unregister_code(KC_LGUI);
-    //         unregister_code(KC_LEFT);
-    //       }
-    //       break;
-    //   case MR_ST:
-    //       // Spotlight
-    //       if (record->event.pressed) {
-    //         register_code(KC_LGUI);
-    //         register_code(KC_SPC);
-    //       } else {
-    //         unregister_code(KC_LGUI);
-    //         unregister_code(KC_SPC);
-    //       }
-    //       break;
-    //   case MR_NT:
-    //       // New tab
-    //       if (record->event.pressed) {
-    //         register_code(KC_LGUI);
-    //         register_code(KC_T);
-    //       } else {
-    //         unregister_code(KC_LGUI);
-    //         unregister_code(KC_T);
-    //       }
-    //       break;
-    // }
+    switch (keycode) {
+      case MR_FW:
+          // Forward by word
+          if (record->event.pressed) {
+            register_code(KC_LALT);
+            register_code(KC_RIGHT);
+          } else {
+            unregister_code(KC_LALT);
+            unregister_code(KC_RIGHT);
+          }
+          break;
+      case MR_BW:
+          // Backward by word
+          if (record->event.pressed) {
+            register_code(KC_LALT);
+            register_code(KC_LEFT);
+          } else {
+            unregister_code(KC_LALT);
+            unregister_code(KC_LEFT);
+          }
+          break;
+      case MR_ST:
+          // Spotlight
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_SPC);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_SPC);
+          }
+          break;
+      case MR_NT:
+          // New tab
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_T);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_T);
+          }
+          break;
+      case MR_X:
+          // Cut
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_X);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_X);
+          }
+          break;
+      case MR_C:
+          // Copy
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_C);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_C);
+          }
+          break;
+      case MR_V:
+          // Paste
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_V);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_V);
+          }
+          break;
+      case MR_F:
+          // Find
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_F);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_F);
+          }
+          break;
+      case MR_S:
+          // Save
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_S);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_S);
+          }
+          break;
+    }
     return true;
 }
