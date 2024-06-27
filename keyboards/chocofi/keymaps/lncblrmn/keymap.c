@@ -23,7 +23,7 @@ enum macros {
     MR_NT, // New tab
 };
 
-enum oneshot_keycodes {
+enum keycodes {
     // Custom oneshot mod implementation with no timers.
     OS_SHFT = SAFE_RANGE,
     OS_CTRL,
@@ -32,53 +32,39 @@ enum oneshot_keycodes {
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-     /*
-      * ┌───┬───┬───┬───┬───┐       ┌───┬───┬───┬───┬───┐
-      * │ Q │ W │ E │ R │ T │       │ Y │ U │ I │ O │ P │
-      * ├───┼───┼───┼───┼───┤       ├───┼───┼───┼───┼───┤
-      * │ A │ S │ D │ F │ G │       │ H │ J │ K │ L │ ; │
-      * ├───┼───┼───┼───┼───┤       ├───┼───┼───┼───┼───┤
-      * │ Z │ X │ C │ V │ B │       │ N │ M │ , │ . │ / │
-      * └───┴───┴───┴───┴───┘       └───┴───┴───┴───┴───┘
-      *           ┌───┐                   ┌───┐
-      *           │GUI├───┐           ┌───┤Alt│
-      *           └───┤Bsp├───┐   ┌───┤Ent├───┘
-      *               └───┤   │   │   ├───┘
-      *                   └───┘   └───┘
-      */
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_QUOT,
-                                   TT(NUM), TT(NAV), KC_SPC,           KC_ENT,  TT(SYM), TT(FUN)
+                                   LA_NUM,  LA_NAV,  KC_SPC,           KC_ENT,  LA_SYM,  LA_FUN
     ),
 
     [NUM] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    XXXX,    KC_LT,   KC_GT,                              KC_EQL,  KC_1,    KC_2,    KC_3,    KC_PLUS,
+        XXXX,    XXXX,    KC_LT,   KC_GT,   XXXX,                               KC_EQL,  KC_1,    KC_2,    KC_3,    KC_PLUS,
         OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_TAB,                             KC_ASTR, KC_4,    KC_5,    KC_6,    KC_MINS,
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               KC_0,    KC_7,    KC_8,    KC_9,    KC_SLSH,
-                                   TO(BASE),XXXX,    KC_SPC,           KC_ENT,  XXXX,    XXXX
+                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  XXXX,    XXXX
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
         KC_ESC,  XXXX,    XXXX,    XXXX,    MR_NT,                              XXXX,    KC_HOME, KC_UP,   KC_END,  KC_DEL,
         OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_TAB,                             KC_WH_U, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,
         XXXX,    XXXX,    XXXX,    XXXX,    KC_CAPS,                            KC_WH_D, MR_FW,   MR_BW,   XXXX,    XXXX,
-                                   XXXX,    TO(BASE),KC_SPC,           KC_ENT,  MR_ST,   XXXX
+                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  MR_ST,   XXXX
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
-        KC_EXLM, KC_AT,   KC_HASH, KC_LT,   KC_GT,                              KC_EQL,  KC_GRV,  KC_DLR,  KC_PERC, KC_PLUS,
+        KC_EXLM, KC_AT,   KC_LT,   KC_GT,   KC_HASH,                            KC_EQL,  KC_GRV,  KC_DLR,  KC_PERC, KC_PLUS,
         OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_TAB,                             KC_ASTR, KC_LPRN, KC_LCBR, KC_LBRC, KC_MINS,
         KC_CIRC, KC_UNDS, KC_BSLS, KC_PIPE, KC_AMPR,                            KC_QUES, KC_RPRN, KC_RCBR, KC_RBRC, KC_SLSH,
-                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  TO(BASE),XXXX
+                                   XXXX,    XXXX,    KC_SPC,           KC_ENT,  XXXX,    XXXX
     ),
 
     [FUN] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
         OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  XXXX,                               XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
-                                   XXXX,    XXXX,   KC_SPC,            KC_ENT,  XXXX,    TO(BASE)
+                                   XXXX,    XXXX,   KC_SPC,            KC_ENT,  XXXX,    XXXX
     ),
 };
 
@@ -133,51 +119,47 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         keycode, record
     );
 
-    switch (keycode) {
-      case MR_FW:
-          // Forward by word
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_RIGHT);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_RIGHT);
-          }
-          break;
-      case MR_BW:
-          // Backward by word
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_LEFT);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LEFT);
-          }
-          break;
-      case MR_ST:
-          // Spotlight
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_SPC);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_SPC);
-          }
-          break;
-      case MR_NT:
-          // New tab
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_T);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_T);
-          }
-          break;
-    }
+    // switch (keycode) {
+    //   case MR_FW:
+    //       // Forward by word
+    //       if (record->event.pressed) {
+    //         register_code(KC_LGUI);
+    //         register_code(KC_RIGHT);
+    //       } else {
+    //         unregister_code(KC_LGUI);
+    //         unregister_code(KC_RIGHT);
+    //       }
+    //       break;
+    //   case MR_BW:
+    //       // Backward by word
+    //       if (record->event.pressed) {
+    //         register_code(KC_LGUI);
+    //         register_code(KC_LEFT);
+    //       } else {
+    //         unregister_code(KC_LGUI);
+    //         unregister_code(KC_LEFT);
+    //       }
+    //       break;
+    //   case MR_ST:
+    //       // Spotlight
+    //       if (record->event.pressed) {
+    //         register_code(KC_LGUI);
+    //         register_code(KC_SPC);
+    //       } else {
+    //         unregister_code(KC_LGUI);
+    //         unregister_code(KC_SPC);
+    //       }
+    //       break;
+    //   case MR_NT:
+    //       // New tab
+    //       if (record->event.pressed) {
+    //         register_code(KC_LGUI);
+    //         register_code(KC_T);
+    //       } else {
+    //         unregister_code(KC_LGUI);
+    //         unregister_code(KC_T);
+    //       }
+    //       break;
+    // }
     return true;
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, SYM, NAV, NUM);
 }
