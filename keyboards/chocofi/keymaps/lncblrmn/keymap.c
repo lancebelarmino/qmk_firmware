@@ -25,7 +25,6 @@ enum keycodes {
     MR_CT,
     MR_NXT,
     MR_PRT,
-    MR_SA,
     MR_CW,
     MR_SW,
     MR_X,
@@ -218,7 +217,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  
     [SYM] = LAYOUT_split_3x5_3(
         KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, KC_AT,                              KC_ASTR, KC_PLUS, KC_PERC, KC_CIRC, KC_HASH,
-        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_LT,                              KC_GT,   KC_QUOT, KC_MINS, KC_UNDS, KC_SCLN,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_GT,                              KC_LT,   KC_QUOT, KC_MINS, KC_UNDS, KC_SCLN,
         KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, XXXX,                               XXXX,    KC_PIPE, KC_COMM, KC_DOT,  KC_SLSH,
                                    XXXX,    XXXX,    KC_SPC,           KC_ENT,  XXXX,    XXXX
     ),
@@ -456,16 +455,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           } else {
             unregister_code(KC_LGUI);
             unregister_code(KC_S);
-          }
-          break;
-       case MR_SA:
-          // Select all
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_A);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_A);
           }
           break;
       case MR_CS:
