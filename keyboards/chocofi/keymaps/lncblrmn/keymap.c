@@ -1,7 +1,6 @@
 #include QMK_KEYBOARD_H
 
 #include "oneshot.h"
-#include "swapper.h"
 
 #define LA_NAV MO(NAV)
 #define LA_SYM MO(SYM)
@@ -40,9 +39,7 @@ enum keycodes {
     MR_CO,
     MR_CA,
     MR_CL,
-
-    // Swapper
-    SW_WIN,
+    MR_AT,
 
     // One Shot Keys
     OS_SHFT,
@@ -64,6 +61,7 @@ enum {
     CO_AS,
     CO_SD,
     CO_DF,
+    CO_AF,
     CO_ZX,
     CO_XC,
     CO_CV,
@@ -153,9 +151,10 @@ const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
 const uint16_t PROGMEM rt_combo[] = {KC_R, KC_T, COMBO_END};
 const uint16_t PROGMEM as_combo[] = {KC_A, KC_S, COMBO_END};
-const uint16_t PROGMEM fg_combo[] = {KC_F, KC_G, COMBO_END};
-const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
+const uint16_t PROGMEM fg_combo[] = {KC_F, KC_G, COMBO_END};
+const uint16_t PROGMEM af_combo[] = {KC_A, KC_F, COMBO_END};
 const uint16_t PROGMEM zx_combo[] = {KC_Z, KC_X, COMBO_END};
 const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
@@ -178,9 +177,10 @@ combo_t key_combos[] = {
     [CO_SD] = COMBO(sd_combo, MR_AS),
     [CO_DF] = COMBO(df_combo, KC_TAB),
     [CO_FG] = COMBO(fg_combo, KC_BSPC),
+    [CO_AF] = COMBO(af_combo, KC_ESC),
     [CO_ZX] = COMBO(zx_combo, MR_F),
     [CO_XC] = COMBO(xc_combo, MR_CO),
-    [CO_CV] = COMBO(cv_combo, KC_ESC),
+    [CO_CV] = COMBO(cv_combo, MR_WF),
     [CO_VB] = COMBO(vb_combo, MR_CS),
 
     // Right Hand
@@ -199,7 +199,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   SW_WIN,  LA_NAV,  KC_SPC,           KC_ENT,  LA_SYM,  MR_SP
+                                   MR_AT,   LA_NAV,  KC_SPC,           KC_ENT,  LA_SYM,  MR_SP
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
@@ -218,7 +218,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [FUN] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
-        KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  MR_WF,                              XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
+        KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  XXXX,                               XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
                                    XXXX,    ____,   ____,              ____,    ____,    XXXX
     ),
@@ -248,19 +248,15 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
     }
 }
 
-bool sw_win_active = false;
-
 oneshot_state os_shft_state = os_up_unqueued;
 oneshot_state os_ctrl_state = os_up_unqueued;
 oneshot_state os_alt_state = os_up_unqueued;
 oneshot_state os_cmd_state = os_up_unqueued;
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  update_swapper(
-        &sw_win_active, KC_LGUI, KC_TAB, SW_WIN,
-        keycode, record
-    );
+bool is_alt_tab_active = false;
+uint16_t alt_tab_timer = 0;     
 
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     update_oneshot(
         &os_shft_state, KC_LSFT, OS_SHFT,
         keycode, record
@@ -523,8 +519,29 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_U);
           }
           break;
+      case MR_AT:
+          if (record->event.pressed) {
+            if (!is_alt_tab_active) {
+              is_alt_tab_active = true;
+              register_code(KC_LGUI);
+            }
+            alt_tab_timer = timer_read();
+            register_code(KC_TAB);
+          } else {
+            unregister_code(KC_TAB);
+          }
+          break;
     }
     return true;
+}
+
+void matrix_scan_user(void) {
+  if (is_alt_tab_active) {
+    if (timer_elapsed(alt_tab_timer) > 600) {
+      unregister_code(KC_LGUI);
+      is_alt_tab_active = false;
+    }
+  }
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
