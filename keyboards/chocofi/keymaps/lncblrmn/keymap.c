@@ -4,6 +4,8 @@
 
 #define LA_NAV MO(NAV)
 #define LA_SYM MO(SYM)
+#define MT_TS LSFT_T(KC_TAB)
+#define MT_ES RSFT_T(KC_ESC)
 #define XXXX KC_NO
 #define ____ KC_TRNS
 
@@ -19,10 +21,8 @@ enum keycodes {
     MR_SP = SAFE_RANGE,
     MR_NT,
     MR_RT,
-    MR_CT,
     MR_NXT,
     MR_PRT,
-    MR_CW,
     MR_SW,
     MR_X,
     MR_C,
@@ -31,15 +31,17 @@ enum keycodes {
     MR_S,
     MR_DS,
     MR_AS,
-    MR_CS,
     MR_ZI,
     MR_ZO,
-    MR_DL,
     MR_WF,
     MR_CO,
-    MR_CA,
     MR_CL,
     MR_AT,
+    MR_RO,
+    MR_ND,
+    MR_PD,
+    MR_MC,
+    MR_SC,
 
     // One Shot Keys
     OS_SHFT,
@@ -51,9 +53,9 @@ enum keycodes {
 enum {
     // Tap Dance
     TD_Z,
-    TD_T,
 
     // Left Hand Combos
+    CO_QW,
     CO_WE,
     CO_ER,
     CO_RT,
@@ -61,7 +63,6 @@ enum {
     CO_AS,
     CO_SD,
     CO_DF,
-    CO_AF,
     CO_ZX,
     CO_XC,
     CO_CV,
@@ -75,7 +76,12 @@ enum {
     CO_HJ,
     CO_JK,
     CO_KL,
+    CO_LBSPC,
     CO_NM,
+    CO_MCOMM,
+
+    // Both Hands Combos
+    CO_SPCENT
 };
 
 void dance_undo_finished(tap_dance_state_t *state, void *user_data) {
@@ -110,43 +116,11 @@ void dance_undo_reset(tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void dance_tab_finished(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            register_code(KC_LGUI);
-            register_code(KC_W);
-            break;
-        case 2:
-            register_code(KC_LGUI);
-            register_code(KC_LSFT);
-            register_code(KC_T);
-            break;
-        default:
-            break;
-    }
-}
-
-void dance_tab_reset(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_W);
-            break;
-        case 2:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LSFT);
-            unregister_code(KC_T);
-            break;
-        default:
-            break;
-    }
-}
-
 tap_dance_action_t tap_dance_actions[] = {
     [TD_Z] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_undo_finished, dance_undo_reset),
-    [TD_T] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_tab_finished, dance_tab_reset),
 };
 
+const uint16_t PROGMEM qw_combo[] = {KC_Q, KC_W, COMBO_END};
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
 const uint16_t PROGMEM rt_combo[] = {KC_R, KC_T, COMBO_END};
@@ -154,7 +128,6 @@ const uint16_t PROGMEM as_combo[] = {KC_A, KC_S, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM fg_combo[] = {KC_F, KC_G, COMBO_END};
-const uint16_t PROGMEM af_combo[] = {KC_A, KC_F, COMBO_END};
 const uint16_t PROGMEM zx_combo[] = {KC_Z, KC_X, COMBO_END};
 const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
@@ -166,59 +139,67 @@ const uint16_t PROGMEM op_combo[] = {KC_O, KC_P, COMBO_END};
 const uint16_t PROGMEM hj_combo[] = {KC_H, KC_J, COMBO_END};
 const uint16_t PROGMEM jk_combo[] = {KC_J, KC_K, COMBO_END};
 const uint16_t PROGMEM kl_combo[] = {KC_K, KC_L, COMBO_END};
+const uint16_t PROGMEM lbspc_combo[] = {KC_L, KC_BSPC, COMBO_END};
 const uint16_t PROGMEM nm_combo[] = {KC_N, KC_M, COMBO_END};
+const uint16_t PROGMEM mcomm_combo[] = {KC_M, KC_COMM, COMBO_END};
+const uint16_t PROGMEM spcent_combo[] = {KC_SPC, KC_ENT, COMBO_END};        
 
 combo_t key_combos[] = {
     // Left Hand
-    [CO_WE] = COMBO(we_combo, MR_NT),
-    [CO_ER] = COMBO(er_combo, MR_RT),
-    [CO_RT] = COMBO(rt_combo, MR_DS),
-    // [CO_AS] = COMBO(as_combo, KC_TAB),
-    [CO_SD] = COMBO(sd_combo, MR_AS),
-    [CO_DF] = COMBO(df_combo, KC_TAB),
+    // [CO_QW] = COMBO(qw_combo, MR_AT),
+    [CO_WE] = COMBO(we_combo, MR_AS),
+    [CO_ER] = COMBO(er_combo, MR_SW),
+    [CO_RT] = COMBO(rt_combo, MR_AT),
+    [CO_AS] = COMBO(as_combo, KC_LCTL),
+    [CO_SD] = COMBO(sd_combo, KC_LOPT),
+    [CO_DF] = COMBO(df_combo, KC_RGUI),
     [CO_FG] = COMBO(fg_combo, KC_BSPC),
-    [CO_AF] = COMBO(af_combo, KC_ESC),
-    [CO_ZX] = COMBO(zx_combo, MR_F),
-    [CO_XC] = COMBO(xc_combo, MR_CO),
-    [CO_CV] = COMBO(cv_combo, MR_WF),
-    [CO_VB] = COMBO(vb_combo, MR_CS),
+    [CO_ZX] = COMBO(zx_combo, MR_NT),
+    [CO_XC] = COMBO(xc_combo, MR_SC),
+    [CO_CV] = COMBO(cv_combo, MR_CO),
+    // [CO_VB] = COMBO(vb_combo, MR_WF),
 
     // Right Hand
-    [CO_YU] = COMBO(yu_combo, MR_SW),
-    [CO_UI] = COMBO(ui_combo, MR_CT),
-    [CO_IO] = COMBO(io_combo, MR_CW),
-    [CO_OP] = COMBO(op_combo, MR_CA),
+    [CO_YU] = COMBO(yu_combo, MR_DS),
+    [CO_UI] = COMBO(ui_combo, MR_PRT),
+    [CO_IO] = COMBO(io_combo, MR_NXT),
+    // [CO_OP] = COMBO(op_combo, MR_CA),
     [CO_HJ] = COMBO(hj_combo, KC_F12),
-    [CO_JK] = COMBO(jk_combo, MR_PRT),
-    [CO_KL] = COMBO(kl_combo, MR_NXT),
+    [CO_JK] = COMBO(jk_combo, KC_RGUI),
+    [CO_KL] = COMBO(kl_combo, KC_ROPT),
+    [CO_LBSPC] = COMBO(lbspc_combo, KC_RCTL),
     [CO_NM] = COMBO(nm_combo, MR_CL),
+    [CO_MCOMM] = COMBO(mcomm_combo, MR_RO),
+
+    // Both Hands
+    [CO_SPCENT] = COMBO(spcent_combo, MR_SP),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
+        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   MR_AT,   LA_NAV,  KC_SPC,           KC_ENT,  LA_SYM,  MR_SP
+                                   MT_TS,   LA_NAV,  KC_SPC,           KC_ENT,  LA_SYM,  MT_ES
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
-        KC_ESC,  MR_S,    XXXX,    XXXX,    XXXX,                               KC_WH_U, KC_HOME, KC_UP,   KC_END,  KC_DEL,
-        OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  KC_TAB,                             KC_WH_D, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,
-        TD(TD_Z),MR_X,    MR_C,    MR_V,    XXXX,                               XXXX,    XXXX,    MR_DL,   XXXX,    TD(TD_T),
+        MR_WF,   MR_S,    MR_F,    MR_RT,   XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  XXXX,                               KC_WH_U, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC,
+        TD(TD_Z),MR_X,    MR_C,    MR_V,    MR_PD,                              KC_WH_D, MR_PD,   MR_ND,   XXXX,    XXXX,
                                    XXXX,    ____,    ____,             ____,    ____,    XXXX
     ),
  
     [SYM] = LAYOUT_split_3x5_3(
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_F5,                              KC_6,    KC_7,     KC_8,   KC_9,    KC_0,
-        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_EXLM, KC_QUOT,  KC_MINS,KC_GRV,  KC_DLR,
-        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                            XXXX,    KC_PERC,  KC_BSLS,KC_HASH, KC_CIRC,
+        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_EXLM, KC_QUOT, KC_MINS, KC_GRV,  KC_SCLN,
+        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                            KC_HASH, KC_PERC, KC_BSLS, KC_DLR,  KC_CIRC,
                                    XXXX,    ____,    ____,             ____,    ____,    XXXX
     ),
 
     [FUN] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
-        KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  XXXX,                               XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
+        KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  MR_MC,                              XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
                                    XXXX,    ____,   ____,              ____,    ____,    XXXX
     ),
@@ -305,14 +286,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_R);
           }
           break;
-      case MR_CT:
-          // Close tab
+      case MR_RO:
+          // Reopen tab
           if (record->event.pressed) {
             register_code(KC_LGUI);
-            register_code(KC_W);
+            register_code(KC_LSFT);
+            register_code(KC_T);
           } else {
             unregister_code(KC_LGUI);
-            unregister_code(KC_W);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_T);
           }
           break;
       case MR_NXT:
@@ -349,18 +332,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_GRV);
           }
           break;
-      case MR_CW:
-          // Close Window
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_LSFT);
-            register_code(KC_W);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LSFT);
-            unregister_code(KC_W);
-          }
-          break;
       case MR_AS:
           // Switch Application
           if (record->event.pressed) {
@@ -371,14 +342,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_TAB);
           }
           break;
-      case MR_CA:
-          // Close Application
+      case MR_ND:
+          // Next Desktop
           if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_Q);
+            register_code(KC_LCTL);
+            register_code(KC_LSFT);
+            register_code(KC_L);
           } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_Q);
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_L);
+          }
+          break;
+      case MR_PD:
+          // Previous Desktop
+          if (record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_LSFT);
+            register_code(KC_J);
+          } else {
+            unregister_code(KC_LCTL);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_J);
+          }
+          break;
+      case MR_MC:
+          // Open Mission Control
+          if (record->event.pressed) {
+            register_code(KC_LCTL);
+            register_code(KC_I);
+          } else {
+            unregister_code(KC_LCTL);
+            unregister_code(KC_I);
           }
           break;
       case MR_DS:
@@ -443,16 +438,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             unregister_code(KC_S);
           }
           break;
-      case MR_CS:
-          // Terminal Clear Session
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_K);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_K);
-          }
-          break;
       case MR_ZI:
           // Zoom in
           if (record->event.pressed) {
@@ -471,18 +456,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           } else {
             unregister_code(KC_LGUI);
             unregister_code(KC_MINS);
-          }
-          break;
-      case MR_DL:
-          // Vscode Duplicate Line
-          if (record->event.pressed) {
-            register_code(KC_LALT);
-            register_code(KC_LSFT);
-            register_code(KC_DOWN);
-          } else {
-            unregister_code(KC_LALT);
-            unregister_code(KC_LSFT);
-            unregister_code(KC_DOWN);
           }
           break;
       case MR_WF:
@@ -529,6 +502,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             register_code(KC_TAB);
           } else {
             unregister_code(KC_TAB);
+          }
+          break;
+      case MR_SC:
+          // Screen Shot Cropped
+          if (record->event.pressed) {
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);
+            register_code(KC_2);
+          } else {
+            unregister_code(KC_LGUI);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_2);
           }
           break;
     }
