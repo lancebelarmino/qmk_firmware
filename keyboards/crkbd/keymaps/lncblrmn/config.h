@@ -22,10 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #define MASTER_LEFT
 
-#define TAPPING_TERM 160
-#define AUTO_SHIFT_TIMEOUT 240
+#define TAPPING_TERM 140
+#define AUTO_SHIFT_TIMEOUT 180
 #define NO_AUTO_SHIFT_NUMERIC
-#define AUTO_SHIFT_MODIFIERS
+// #define AUTO_SHIFT_MODIFIERS
 #define MK_COMBINED
 #define TAPPING_TOGGLE 1
-
