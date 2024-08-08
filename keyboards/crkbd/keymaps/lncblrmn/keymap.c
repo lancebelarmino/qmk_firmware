@@ -21,19 +21,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "oneshot.h"
 
 #define LA_DEF TO(BASE)
-#define LA_NAV MO(NAV)
-#define LA_SYM MO(SYM)
-#define LA_MOU TT(MOUSE)
+#define LA_NAV LT(NAV, KC_SPC)
+#define LA_SYM LT(SYM, KC_ENT)
+#define LA_MOU TO(MOUSE)
 
-#define MT_SG CMD_T(KC_SPC)
-#define MT_EG CMD_T(KC_ENT)
-#define MT_EO LOPT_T(KC_ESC)
-#define MT_TS LSFT_T(MR_AS)
+#define MT_TC CMD_T(KC_TAB)
+#define MT_EO OPT_T(KC_ESC)
+#define MT_CS SFT_T(KC_CAPS)
 
-#define MR_X KC_CUT
-#define MR_C KC_COPY
-#define MR_V KC_PASTE
-#define MR_F KC_FIND
+#define MR_SP LGUI(KC_SPC)
+#define MR_X LGUI(KC_X)
+#define MR_C LGUI(KC_C)
+#define MR_V LGUI(KC_V)
+#define MR_Z TD(TD_Z)
 
 #define XXXXXXX KC_NO
 #define _______ KC_TRNS
@@ -48,8 +48,7 @@ enum layers {
 
 enum keycodes {
     // Macros
-    MR_SP = SAFE_RANGE,
-    MR_NT,
+    MR_NT = SAFE_RANGE,
     MR_RT,
     MR_NXT,
     MR_PRT,
@@ -74,7 +73,11 @@ enum keycodes {
 
 enum {
     // Tap Dance
-    TD_Z
+    TD_Z,
+
+    // Combo
+    CO_SD,
+    CO_DF
 };
 
 
@@ -114,41 +117,48 @@ tap_dance_action_t tap_dance_actions[] = {
     [TD_Z] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_undo_finished, dance_undo_reset),
 };
 
+const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
+const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
+
+combo_t key_combos[] = {
+    [CO_SD] = COMBO(sd_combo, KC_BSPC),
+    [CO_DF] = COMBO(df_combo, KC_SPC)
+}; 
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        MR_WF,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,   KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_TAB,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_BSPC,
+       MR_AT,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN,  KC_QUOT,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     KC_LSFT,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, KC_RSFT,
+       MT_CS,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  QK_REP,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            MT_EO,  LA_NAV,  MT_SG,      MT_EG,   LA_SYM,  LA_MOU
+                                            MT_EO,  LA_NAV,   MT_TC,     KC_BSPC, LA_SYM,   MR_SP
                                       //`--------------------------'  `--------------------------'
-
   ),
 
     [NAV] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______,   MR_PD,   MR_ND,  MR_PRT,  MR_NXT,   MR_MC,                      XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, XXXXXXX, _______,
+      _______, XXXXXXX,   MR_MC,  MR_PRT,  MR_NXT, XXXXXXX,                      XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SW,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, XXXXXXX, _______,
+      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SW,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT,  LA_MOU, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, TD(TD_Z),   MR_X,    MR_C,    MR_V, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
+      _______,    MR_Z, XXXXXXX,   MR_PD,   MR_ND, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, _______, _______,    _______, _______, _______
+                                          _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   ),
 
     [SYM] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_6,    KC_7,    KC_8,    KC_9,    KC_0, _______,
+      _______, KC_BSLS,  KC_GRV,  KC_DLR, KC_PERC, KC_CIRC,                      KC_HASH,    KC_7,    KC_8,    KC_9, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL,   KC_AT,                      KC_EXLM, KC_QUOT, KC_MINS,  KC_GRV, KC_SCLN, _______,
+      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL,   KC_AT,                      KC_EXLM,    KC_4,    KC_5,    KC_6, KC_MINS, KC_BSPC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                      KC_HASH, KC_PERC, KC_BSLS,  KC_DLR, KC_CIRC, _______,
+      _______, KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                      XXXXXXX,    KC_1,    KC_2,    KC_3,    KC_0, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, _______, _______,    _______, _______, _______
+                                          _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   ),
 
@@ -156,23 +166,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       _______,   MR_PD,   MR_ND,  MR_PRT,  MR_NXT,   MR_MC,                      XXXXXXX, XXXXXXX, KC_MS_U, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_ACL2, KC_ACL1, KC_ACL0, KC_BTN1, KC_BTN2,   MR_SW,                        MR_AT, KC_MS_L, KC_MS_D, KC_MS_R, XXXXXXX, _______,
+      KC_ACL2, KC_ACL1, KC_ACL0, KC_BTN1, KC_BTN2, KC_WH_U,                      XXXXXXX, KC_MS_L, KC_MS_D, KC_MS_R,  LA_DEF, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, KC_WH_U, KC_WH_D, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
+      _______, XXXXXXX, XXXXXXX, KC_WH_U, KC_WH_D, KC_WH_D,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                           LA_DEF, _______, _______,    _______, _______, _______
+                                           _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   ),
 
     [FUN] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,   KC_F1,   KC_F2,   KC_F3,   KC_F4, _______,
+      _______, XXXXXXX, XXXXXXX,   MR_ZO,   MR_ZI, XXXXXXX,                      XXXXXXX,   KC_F7,   KC_F8,   KC_F9,  KC_F12, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SC,                        MR_CL,   KC_F5,   KC_F6,   KC_F7,   KC_F8, _______,
+      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SC,                        MR_CL,   KC_F4,   KC_F5,   KC_F6,  KC_F11, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,   KC_F9,   KC_F10, KC_F11,  KC_F12, _______,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,   KC_F1,   KC_F2,   KC_F3,  KC_F10, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                          XXXXXXX, _______, _______,    _______, _______, _______
+                                          _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
   )
 };
@@ -229,16 +239,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     );
 
     switch (keycode) {
-      case MR_SP:
-          // Spotlight
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_SPC);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_SPC);
-          }
-          break;
       case MR_AS:
           // Switch Application
           if (record->event.pressed) {
@@ -392,7 +392,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void matrix_scan_user(void) {
   if (is_alt_tab_active) {
-    if (timer_elapsed(alt_tab_timer) > 600) {
+    if (timer_elapsed(alt_tab_timer) > 400) {
       unregister_code(KC_LGUI);
       is_alt_tab_active = false;
     }
