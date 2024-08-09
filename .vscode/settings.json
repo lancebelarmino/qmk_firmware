@@ -30,5 +30,11 @@
     },
     "clangd.arguments": [
         "--header-insertion=never"
+    ],
+    "favorites.resources": [
+      {
+        "filePath": "keyboards/chocofi/keymaps/lncblrmn/combos.def",
+        "group": "Default"
+      }
     ]
 }

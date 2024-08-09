@@ -3,18 +3,15 @@
 #include "oneshot.h"
 
 #define LA_DEF TO(BASE)
-#define LA_NAV MO(NAV)
-#define LA_SYM MO(SYM)
-#define LA_MOU TT(MOUSE)
+#define LA_NAV LT(NAV, KC_SPC)
+#define LA_SYM LT(SYM, KC_ENT)
+#define LA_MOU TO(MOUSE)
 
-#define MT_SG CMD_T(KC_SPC)
-#define MT_EG CMD_T(KC_ENT)
+#define MT_TC CMD_T(KC_TAB)
 #define MT_ES SFT_T(KC_ESC)
-#define MT_TS SFT_T(KC_TAB)
 
-#define MR_X KC_CUT
-#define MR_C KC_COPY
-#define MR_V KC_PASTE
+#define MR_SP LGUI(KC_SPC)
+#define MR_QS LGUI(KC_TAB)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -29,8 +26,7 @@ enum layers {
 
 enum keycodes {
     // Macros
-    MR_SP = SAFE_RANGE,
-    MR_NT,
+    MR_NT = SAFE_RANGE,
     MR_RT,
     MR_NXT,
     MR_PRT,
@@ -54,87 +50,52 @@ enum keycodes {
 };
 
 enum {
-    // Combos
-    CO_DF,
-    CO_JK,
-
-    // Tap Dance
-    TD_Z,
+    // Combo
+    CO_WE,
+    CO_ER,
+    CO_SD,
+    CO_DF
 };
 
-void dance_undo_finished(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            register_code(KC_LGUI);
-            register_code(KC_Z);
-            break;
-        case 2:
-            register_code(KC_LGUI);
-            register_code(KC_LSFT);  
-            register_code(KC_Z);
-            break;
-        default:
-            break;
-    }
-}
-
-void dance_undo_reset(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_Z);
-            break;
-        case 2:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LSFT);  
-            unregister_code(KC_Z);
-            break;
-        default:
-            break;
-    }
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-    [TD_Z] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_undo_finished, dance_undo_reset),
-};
-
-const uint16_t PROGMEM jk_combo[] = {KC_J, KC_K, COMBO_END};
+const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
+const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
-      
+
 combo_t key_combos[] = {
-    // Left Hand
-    [CO_DF] = COMBO(df_combo, KC_LOPT),
-    // Right Hand
-    [CO_JK] = COMBO(jk_combo, KC_F12),
-};
+    [CO_WE] = COMBO(we_combo, MR_QS),
+    [CO_ER] = COMBO(er_combo, MR_AT),
+    [CO_SD] = COMBO(sd_combo, KC_BSPC),
+    [CO_DF] = COMBO(df_combo, KC_SPC)
+}; 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
+        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   MT_TS,   LA_NAV,  MT_SG,           MT_EG,    LA_SYM,  MT_ES
+                                   MT_ES,   LA_NAV,  MT_TC,            KC_BSPC, LA_SYM,  MR_SP
     ),
-
+        
     [NAV] = LAYOUT_split_3x5_3(
-        MR_PD,   MR_ND,   MR_PRT,  MR_NXT,  MR_MC,                              XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  MR_SW,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        TD(TD_Z),MR_X,    MR_C,    MR_V,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                   XXXX,    ____,    ____,             ____,    ____,    XXXX
+        XXXX,    MR_MC,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  MR_SW,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, XXXX,
+        XXXX,    XXXX,    MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                   ____,    ____,    ____,             ____,    ____,    ____
     ),
  
     [SYM] = LAYOUT_split_3x5_3(
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_EXLM, KC_QUOT, KC_MINS, KC_GRV,  KC_SCLN,
-        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                            KC_HASH, KC_PERC, KC_BSLS, KC_DLR,  KC_CIRC,
-                                   XXXX,    ____,    ____,             ____,    ____,    XXXX
+        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, KC_CIRC,                            KC_ASTR, KC_1,    KC_2,    KC_3,    KC_HASH,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_QUOT,                            KC_0,    KC_4,    KC_5,    KC_6,    KC_MINS,
+        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_AT,                              KC_PERC, KC_7,    KC_8,    KC_9,    XXXX,
+                                   ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [FUN] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
         KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  MR_SC,                              MR_CL,   KC_F5,   KC_F6,   KC_F7,   KC_F8,
         XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
-                                   XXXX,    ____,   ____,              ____,    ____,    XXXX
+                                   ____,    ____,   ____,              ____,    ____,    ____
     ),
 };
 
@@ -189,16 +150,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     );
 
     switch (keycode) {
-      case MR_SP:
-          // Spotlight
-          if (record->event.pressed) {
-            register_code(KC_LGUI);
-            register_code(KC_SPC);
-          } else {
-            unregister_code(KC_LGUI);
-            unregister_code(KC_SPC);
-          }
-          break;
       case MR_AS:
           // Switch Application
           if (record->event.pressed) {
@@ -352,7 +303,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void matrix_scan_user(void) {
   if (is_alt_tab_active) {
-    if (timer_elapsed(alt_tab_timer) > 600) {
+    if (timer_elapsed(alt_tab_timer) > 400) {
       unregister_code(KC_LGUI);
       is_alt_tab_active = false;
     }
