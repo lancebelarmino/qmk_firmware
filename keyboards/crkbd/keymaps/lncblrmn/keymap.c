@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LA_MOU TG(MOUSE)
 
 
-#define MT_TC CMD_T(KC_TAB)
+#define MT_TC CMD_T(KC_SPC)
 #define MT_ES SFT_T(KC_ESC)
 #define MT_CO OPT_T(KC_CAPS)
 
@@ -69,9 +69,6 @@ enum keycodes {
 };
 
 enum {
-    // Tap Dance
-    TD_Z,
-
     // Combo
     CO_WE,
     CO_ER,
@@ -80,43 +77,6 @@ enum {
     CO_DF,
     CO_XC,
     CO_CV,
-};
-
-
-void dance_undo_finished(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            register_code(KC_LGUI);
-            register_code(KC_Z);
-            break;
-        case 2:
-            register_code(KC_LGUI);
-            register_code(KC_LSFT);  
-            register_code(KC_Z);
-            break;
-        default:
-            break;
-    }
-}
-
-void dance_undo_reset(tap_dance_state_t *state, void *user_data) {
-    switch (state->count) {
-        case 1:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_Z);
-            break;
-        case 2:
-            unregister_code(KC_LGUI);
-            unregister_code(KC_LSFT);  
-            unregister_code(KC_Z);
-            break;
-        default:
-            break;
-    }
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-    [TD_Z] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_undo_finished, dance_undo_reset),
 };
 
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
@@ -147,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
        MT_CO,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  QK_REP,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            MT_ES,  LA_NAV,   MT_TC,     KC_BSPC, LA_SYM,   MR_SP
+                                            MT_ES,  LA_NAV,   MT_TC,     KC_ENT,  LA_SYM,   MR_SP
                                       //`--------------------------'  `--------------------------'
   ),
 
