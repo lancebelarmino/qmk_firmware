@@ -2,12 +2,11 @@
 
 #include "oneshot.h"
 
-#define LA_DEF TO(BASE)
-#define LA_NAV LT(NAV, KC_SPC)
-#define LA_SYM LT(SYM, KC_ENT)
-#define LA_MOU TO(MOUSE)
+#define LA_NAV LT(NAV, KC_TAB)
+#define LA_SYM MO(SYM)
+#define LA_MOU TG(MOUSE)
 
-#define MT_TC CMD_T(KC_TAB)
+#define MT_TC CMD_T(KC_SPC)
 #define MT_ES SFT_T(KC_ESC)
 
 #define MR_SP LGUI(KC_SPC)
@@ -53,41 +52,57 @@ enum {
     // Combo
     CO_WE,
     CO_ER,
+    CO_AS,
     CO_SD,
-    CO_DF
+    CO_DF,
+    CO_XC,
+    CO_CV,
 };
 
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM as_combo[] = {KC_A, KC_S, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
+const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 
 combo_t key_combos[] = {
     [CO_WE] = COMBO(we_combo, MR_QS),
     [CO_ER] = COMBO(er_combo, MR_AT),
+    [CO_AS] = COMBO(as_combo, QK_REP),
     [CO_SD] = COMBO(sd_combo, KC_BSPC),
-    [CO_DF] = COMBO(df_combo, KC_SPC)
-}; 
+    [CO_DF] = COMBO(df_combo, KC_SPC),
+    [CO_XC] = COMBO(xc_combo, MR_SP),
+    [CO_CV] = COMBO(cv_combo, KC_LALT),
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,
+        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   MT_ES,   LA_NAV,  MT_TC,            KC_BSPC, LA_SYM,  MR_SP
+                                   MT_ES,   LA_NAV,  MT_TC,            KC_ENT,  LA_SYM,  LA_MOU
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
         XXXX,    MR_MC,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        OS_SHFT, OS_CTRL, OS_ALT,  OS_CMD,  MR_SW,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, XXXX,
+        OS_ALT,  OS_CTRL, OS_SHFT, OS_CMD,  MR_SW,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
         XXXX,    XXXX,    MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
- 
+
     [SYM] = LAYOUT_split_3x5_3(
         KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, KC_CIRC,                            KC_ASTR, KC_1,    KC_2,    KC_3,    KC_HASH,
-        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_QUOT,                            KC_0,    KC_4,    KC_5,    KC_6,    KC_MINS,
-        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_AT,                              KC_PERC, KC_7,    KC_8,    KC_9,    XXXX,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_QUOT,                            KC_MINS, KC_4,    KC_5,    KC_6,    KC_SCLN,
+        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_AT,                              KC_0,    KC_7,    KC_8,    KC_9,    KC_PERC,
+                                   ____,    ____,    ____,             ____,    ____,    ____
+    ),
+
+    [MOUSE] = LAYOUT_split_3x5_3(
+        XXXX,    MR_MC,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_MS_U, XXXX,    XXXX,
+        KC_ACL2, KC_ACL0, KC_BTN1, KC_BTN2, MR_SW,                              XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, ____,
+        XXXX,    XXXX,    MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
