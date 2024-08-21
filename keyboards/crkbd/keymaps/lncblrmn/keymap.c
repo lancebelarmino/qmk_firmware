@@ -20,12 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "oneshot.h"
 
-#define LA_NAV LT(NAV, KC_TAB)
-#define LA_SYM MO(SYM)
-#define LA_MOU TG(MOUSE)
+#define LA_NAV LT(NAV, KC_SPC)
+#define LA_SYM LT(SYM, KC_ENT)
+#define LA_MOU TT(MOUSE)
 
-
-#define MT_TC CMD_T(KC_SPC)
+#define MT_TC CMD_T(KC_TAB)
 #define MT_ES SFT_T(KC_ESC)
 #define MT_CO OPT_T(KC_CAPS)
 
@@ -90,8 +89,8 @@ const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 combo_t key_combos[] = {
     [CO_WE] = COMBO(we_combo, MR_QS),
     [CO_ER] = COMBO(er_combo, MR_AT),
-    [CO_AS] = COMBO(as_combo, QK_REP),
-    [CO_SD] = COMBO(sd_combo, KC_BSPC),
+    [CO_AS] = COMBO(as_combo, KC_BSPC),
+    [CO_SD] = COMBO(sd_combo, QK_REP),
     [CO_DF] = COMBO(df_combo, KC_SPC),
     [CO_XC] = COMBO(xc_combo, MR_SP),
     [CO_CV] = COMBO(cv_combo, KC_LALT),
@@ -101,21 +100,21 @@ combo_t key_combos[] = {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-       MR_WF,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,   KC_F12,
+       MR_WF,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-       MR_AT,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_BSPC, XXXXXXX,
+       MR_AT,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_BSPC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-       MT_CO,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  QK_REP,
+       MT_CO,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,   KC_F3,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            MT_ES,  LA_NAV,   MT_TC,     KC_ENT,  LA_SYM,   MR_SP
+                                            MT_ES,  LA_NAV,   MT_TC,     LA_MOU,  LA_SYM,   MR_SP
                                       //`--------------------------'  `--------------------------'
   ),
 
-    [NAV] = LAYOUT_split_3x6_3(
+    [NAV] = LAYOUT_split_3x6_3( 
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       _______, XXXXXXX,   MR_MC,  MR_PRT,  MR_NXT, XXXXXXX,                      XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SW,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
+      _______, OS_CTRL,  OS_ALT,  OS_SHFT, OS_CMD,   MR_SW,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, XXXXXXX, XXXXXXX,   MR_PD,   MR_ND, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
@@ -127,9 +126,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       _______, KC_BSLS,  KC_GRV,  KC_DLR, KC_EXLM, KC_CIRC,                      KC_ASTR,    KC_1,    KC_2,    KC_3, KC_HASH, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL, KC_QUOT,                      KC_MINS,    KC_4,    KC_5,    KC_6, KC_SCLN, _______,
+      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL, KC_QUOT,                         KC_0,    KC_4,    KC_5,    KC_6, KC_MINS, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR,   KC_AT,                         KC_0,    KC_7,    KC_8,    KC_8, KC_PERC, _______,
+      _______, KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR,   KC_AT,                      _______,    KC_7,    KC_8,    KC_9, KC_PERC, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -149,11 +148,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [FUN] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______, XXXXXXX, XXXXXXX,   MR_ZO,   MR_ZI, XXXXXXX,                      XXXXXXX,   KC_F7,   KC_F8,   KC_F9,  KC_F12, _______,
+      _______, XXXXXXX, XXXXXXX,   MR_ZO,   MR_ZI, XXXXXXX,                      XXXXXXX,   KC_F1,   KC_F2,   KC_F3,  KC_F10, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, OS_SHFT, OS_CTRL,  OS_ALT,  OS_CMD,   MR_SC,                        MR_CL,   KC_F4,   KC_F5,   KC_F6,  KC_F11, _______,
+      _______, OS_CTRL,  OS_ALT,  OS_SHFT, OS_CMD,   MR_SC,                        MR_CL,   KC_F4,   KC_F5,   KC_F6,  KC_F11, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,   KC_F1,   KC_F2,   KC_F3,  KC_F10, _______,
+      _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      XXXXXXX,   KC_F7,   KC_F8,   KC_F9,  KC_F12, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -365,7 +364,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void matrix_scan_user(void) {
   if (is_alt_tab_active) {
-    if (timer_elapsed(alt_tab_timer) > 400) {
+    if (timer_elapsed(alt_tab_timer) > 600) {
       unregister_code(KC_LGUI);
       is_alt_tab_active = false;
     }
