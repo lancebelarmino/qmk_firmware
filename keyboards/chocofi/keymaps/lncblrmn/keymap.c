@@ -2,7 +2,6 @@
 
 #include "oneshot.h"
 
-#define LA_BAS TO(BASE)
 #define LA_NAV LT(NAV, KC_SPC)
 #define LA_SYM LT(SYM, KC_ENT)
 #define LA_MOU TT(MOUSE)
@@ -79,7 +78,7 @@ const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 combo_t key_combos[] = {
     [CO_WE] = COMBO(we_combo, KC_BSPC),
     [CO_ER] = COMBO(er_combo, KC_ENT),
-    [CO_SD] = COMBO(sd_combo, KC_TAB),
+    [CO_SD] = COMBO(sd_combo, MR_QS),
     [CO_DF] = COMBO(df_combo, QK_REP),
     [CO_XC] = COMBO(xc_combo, MR_SP),
     [CO_CV] = COMBO(cv_combo, MR_WF),
@@ -96,9 +95,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        MR_MC,   MR_QS,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        MR_MC,   MR_AT,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
         OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        MR_SW,   MR_AT,   MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    MR_SW,   MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
