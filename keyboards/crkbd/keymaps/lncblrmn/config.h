@@ -33,10 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define NO_AUTO_SHIFT_NUMERIC
 
 #define MK_KINETIC_SPEED
-#define MOUSEKEY_INITIAL_SPEED 280 
+#define MOUSEKEY_INITIAL_SPEED 320 
 #define MOUSEKEY_ACCELERATED_SPEED 2500
 
-#define COMBO_TERM 30
+#define COMBO_TERM 35
 #define COMBO_STRICT_TIMER
 #define COMBO_MUST_HOLD_MODS
 #define COMBO_HOLD_TERM 165

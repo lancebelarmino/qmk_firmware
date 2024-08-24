@@ -2,15 +2,21 @@
 
 #include "oneshot.h"
 
+#define LA_BAS TO(BASE)
 #define LA_NAV LT(NAV, KC_SPC)
 #define LA_SYM LT(SYM, KC_ENT)
 #define LA_MOU TT(MOUSE)
-
-#define MT_TC CMD_T(KC_SPC)
-#define MT_ES SFT_T(KC_ESC)
+#define LA_DES LT(DES, KC_ESC)
 
 #define MR_SP LGUI(KC_SPC)
 #define MR_QS LGUI(KC_TAB)
+#define MR_CO LGUI(KC_SLSH)
+#define MR_X LGUI(KC_X)
+#define MR_C LGUI(KC_C)
+#define MR_V LGUI(KC_V)
+#define MR_D LGUI(KC_D)
+#define MR_Z LGUI(KC_Z)
+#define MR_SZ LSG(KC_Z)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -20,7 +26,8 @@ enum layers {
     NAV,
     SYM,
     FUN,
-    MOUSE
+    MOUSE,
+    DES,
 };
 
 enum keycodes {
@@ -52,7 +59,6 @@ enum {
     // Combo
     CO_WE,
     CO_ER,
-    CO_AS,
     CO_SD,
     CO_DF,
     CO_XC,
@@ -63,7 +69,6 @@ enum {
 
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
-const uint16_t PROGMEM as_combo[] = {KC_A, KC_S, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
@@ -72,13 +77,12 @@ const uint16_t PROGMEM mcomm_combo[] = {KC_M, KC_COMM, COMBO_END};
 const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 
 combo_t key_combos[] = {
-    // [CO_WE] = COMBO(we_combo, MR_QS),
-    // [CO_ER] = COMBO(er_combo, MR_AT),
-    [CO_AS] = COMBO(as_combo, KC_BSPC),
-    [CO_SD] = COMBO(sd_combo, QK_REP),
-    [CO_DF] = COMBO(df_combo, KC_SPC),
+    [CO_WE] = COMBO(we_combo, KC_BSPC),
+    [CO_ER] = COMBO(er_combo, KC_ENT),
+    [CO_SD] = COMBO(sd_combo, KC_TAB),
+    [CO_DF] = COMBO(df_combo, QK_REP),
     [CO_XC] = COMBO(xc_combo, MR_SP),
-    [CO_CV] = COMBO(cv_combo, KC_LALT),
+    [CO_CV] = COMBO(cv_combo, MR_WF),
     [CO_MCOMM] = COMBO(mcomm_combo, KC_F12),
     [CO_COMMDOT] = COMBO(commdot_combo, KC_F3),
 };
@@ -88,13 +92,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   MT_ES,   LA_NAV,  MT_TC,            KC_QUOT, LA_SYM,  LA_MOU
+                                   LA_DES,  LA_NAV,  KC_TAB,           KC_QUOT, LA_SYM,  LA_MOU
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
         MR_MC,   MR_QS,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_SW,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        XXXX,    MR_AT,   MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        MR_SW,   MR_AT,   MR_PD,   MR_ND,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -116,7 +120,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         MR_WF,   XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
         KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  MR_SC,                              MR_CL,   KC_F5,   KC_F6,   KC_F7,   KC_F8,
         XXXX,    XXXX,    XXXX,    KC_CAPS, XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
-                                   ____,    ____,   ____,              ____,    ____,    ____
+                                   ____,    ____,    ____,             ____,    ____,    ____
+    ),
+
+    [DES] = LAYOUT_split_3x5_3(
+        XXXX,    XXXX,    MR_Z,    MR_SZ,   MR_ZO,                              XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        KC_LCTL, KC_LOPT, KC_LSFT, KC_LCMD, MR_ZI,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        KC_SPC,  MR_X,    MR_C,    MR_V,    MR_D,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                   ____,    ____,    ____,             ____,    ____,    ____
     ),
 };
 

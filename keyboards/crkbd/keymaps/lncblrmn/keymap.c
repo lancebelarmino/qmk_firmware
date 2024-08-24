@@ -23,13 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LA_NAV LT(NAV, KC_SPC)
 #define LA_SYM LT(SYM, KC_ENT)
 #define LA_MOU TT(MOUSE)
-
+     
 #define MT_TC CMD_T(KC_TAB)
 #define MT_ES SFT_T(KC_ESC)
 #define MT_CO OPT_T(KC_CAPS)
 
 #define MR_SP LGUI(KC_SPC)
 #define MR_QS LGUI(KC_TAB)
+#define MR_CO LGUI(KC_SLSH) 
 
 #define XXXXXXX KC_NO
 #define _______ KC_TRNS
@@ -71,7 +72,6 @@ enum {
     // Combo
     CO_WE,
     CO_ER,
-    CO_AS,
     CO_SD,
     CO_DF,
     CO_XC,
@@ -80,20 +80,18 @@ enum {
 
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
-const uint16_t PROGMEM as_combo[] = {KC_A, KC_S, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 
 combo_t key_combos[] = {
-    [CO_WE] = COMBO(we_combo, MR_QS),
-    [CO_ER] = COMBO(er_combo, MR_AT),
-    [CO_AS] = COMBO(as_combo, KC_BSPC),
+    [CO_WE] = COMBO(we_combo, MR_WF),
+    [CO_ER] = COMBO(er_combo, KC_BSPC),
     [CO_SD] = COMBO(sd_combo, QK_REP),
-    [CO_DF] = COMBO(df_combo, KC_SPC),
+    [CO_DF] = COMBO(df_combo, KC_ENT),
     [CO_XC] = COMBO(xc_combo, MR_SP),
-    [CO_CV] = COMBO(cv_combo, KC_LALT),
+    [CO_CV] = COMBO(cv_combo, MR_CO),
 };
 
 
@@ -102,21 +100,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
      XXXXXXX,     KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,    KC_P, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-       MR_WF,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_BSPC,  KC_F12,
+     XXXXXXX,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_BSPC, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-     KC_CAPS,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,   KC_F3,
+     XXXXXXX,     KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH, XXXXXXX,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            MT_ES,  LA_NAV,   MT_TC,    KC_QUOT,  LA_SYM,  LA_MOU
+                                            MT_ES,  LA_NAV,   MT_TC,     LA_MOU,  LA_SYM, KC_MINS
                                       //`--------------------------'  `--------------------------'
   ),
 
     [NAV] = LAYOUT_split_3x6_3( 
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-      _______, MR_MC,     MR_QS,  MR_PRT,  MR_NXT, XXXXXXX,                      XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, XXXXXXX, _______,
+      _______,   MR_MC,   MR_QS,  MR_PRT,  MR_NXT, XXXXXXX,                      XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, OS_CTRL,  OS_ALT,  OS_SHFT, OS_CMD,   MR_SW,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
+      _______, OS_CTRL,  OS_ALT,  OS_SHFT, OS_CMD, XXXXXXX,                      XXXXXXX, KC_LEFT, KC_DOWN, KC_RGHT, _______, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, XXXXXXX,   MR_AT,   MR_PD,   MR_ND, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
+      _______,   MR_SW,   MR_AT,   MR_PD,   MR_ND, XXXXXXX,                      XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           _______, _______, _______,    _______, _______, _______
                                       //`--------------------------'  `--------------------------'
@@ -126,7 +124,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
       _______, KC_BSLS,  KC_GRV,  KC_DLR, KC_EXLM, KC_CIRC,                      KC_ASTR,    KC_1,    KC_2,    KC_3, KC_HASH, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL, KC_MINS,                         KC_0,    KC_4,    KC_5,    KC_6, KC_SCLN, _______,
+      _______, KC_LBRC, KC_LPRN, KC_LCBR,  KC_EQL, KC_QUOT,                         KC_0,    KC_4,    KC_5,    KC_6, KC_SCLN, _______,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       _______, KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR,   KC_AT,                      _______,    KC_7,    KC_8,    KC_9, KC_PERC, _______,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
@@ -158,7 +156,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                       //`--------------------------'  `--------------------------'
   )
 };
-
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
