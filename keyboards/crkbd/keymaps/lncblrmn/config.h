@@ -25,15 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define TAPPING_TERM 165
 #define TAPPING_TOGGLE 1
 
-#define TAPPING_TERM 165
-#define TAPPING_TOGGLE 1
-
-#define AUTO_SHIFT_TIMEOUT 200
+#define AUTO_SHIFT_TIMEOUT 185
 #define AUTO_SHIFT_REPEAT
+#define AUTO_SHIFT_ENTER
 #define NO_AUTO_SHIFT_NUMERIC
 
 #define MK_KINETIC_SPEED
-#define MOUSEKEY_INITIAL_SPEED 320 
+#define MOUSEKEY_INITIAL_SPEED 400 
 #define MOUSEKEY_ACCELERATED_SPEED 2500
 
 #define COMBO_TERM 35
