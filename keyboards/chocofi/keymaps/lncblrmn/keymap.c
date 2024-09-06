@@ -2,10 +2,10 @@
 
 #include "oneshot.h"
 
-#define LA_NAV MO(NAV)
+#define LA_NAV NAV
+#define LA_WM  WM
 #define LA_SYM MO(SYM)
 #define LA_DES LT(DES, KC_ESC)
-#define LA_WM  LT(WM, KC_SPC)
 #define LA_WM2 MO(WM2)
 #define LA_NUM MO(NUM)
 
@@ -19,6 +19,8 @@
 #define MR_V G(KC_V)
 #define MR_S G(KC_S)
 #define MR_R G(KC_R)
+#define MR_SA A(KC_TAB)
+#define MR_A G(KC_A)
 
 #define WM_A A(KC_A)
 #define WM_S A(KC_S)
@@ -29,7 +31,6 @@
 #define WM_AD LSA(KC_D)
 #define WM_AF LSA(KC_F)
 #define WM_SM LSA(KC_SCLN)
-#define WM_AT A(KC_TAB)
 #define WM_LT A(KC_SLSH)
 #define WM_LA A(KC_COMM)
 #define WM_FU A(KC_I)
@@ -43,6 +44,10 @@
 #define WM_RM LSA(KC_MINS)
 #define WM_RP LSA(KC_EQL)
 #define WM_FS LSA(KC_H)
+
+#define CK_LANG S(KC_COMM)
+#define CK_RANG S(KC_DOT)
+#define CK_RANG S(KC_DOT)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -86,6 +91,7 @@ enum {
     CO_ER,
     CO_SD,
     CO_DF,
+    CO_FG,
     CO_XC,
     CO_CV,
     CO_MCOMM,
@@ -97,6 +103,7 @@ const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
+const uint16_t PROGMEM fg_combo[] = {KC_F, KC_G, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
 const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
 const uint16_t PROGMEM mcomm_combo[] = {KC_M, KC_COMM, COMBO_END};
@@ -104,10 +111,11 @@ const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 const uint16_t PROGMEM kl_combo[] = {KC_K, KC_L, COMBO_END};
 
 combo_t key_combos[] = {
-    [CO_WE] = COMBO(we_combo, WM_FR),
+    [CO_WE] = COMBO(we_combo, KC_ESC),
     [CO_ER] = COMBO(er_combo, MR_R),
     [CO_SD] = COMBO(sd_combo, KC_TAB),
-    [CO_DF] = COMBO(df_combo, MR_S),
+    [CO_DF] = COMBO(df_combo, MR_SA),
+    [CO_FG] = COMBO(fg_combo, MR_AT),
     [CO_XC] = COMBO(xc_combo, MR_SP),
     [CO_CV] = COMBO(cv_combo, QK_REP),
     [CO_MCOMM] = COMBO(mcomm_combo, KC_F12),
@@ -164,32 +172,189 @@ void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record)
             unregister_code16(keycode);
     }
 }
+
+// Tap dance states (focused on hold)
+typedef enum {
+    TD_NONE,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_HOLD,
+    TD_SINGLE_TAP,
+    TD_DOUBLE_TAP
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+// Tap dance enums
+enum {
+    TD_LAYER_HOLD_1,
+    TD_LAYER_HOLD_2,
+    TD_UNDO
+};
+
+// Create an instance of 'td_tap_t' for the tap dance
+static td_tap_t td_layer_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+// Determine the current tap dance state
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        return state->pressed ? TD_SINGLE_HOLD : TD_SINGLE_TAP;
+    } else if (state->count == 2) {
+        return state->pressed ? TD_DOUBLE_HOLD : TD_DOUBLE_TAP;
+    }
+    return TD_NONE;
+}
+
+// Tap dance layer handling for TD_LAYER_HOLD_1
+void layer1_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_on(NAV);  // Single hold activates LAYER1
+            break;
+        case TD_DOUBLE_HOLD:
+            layer_on(WM);  // Double hold activates LAYER2
+            break;
+        default:
+            break;
+    }
+}
+
+void layer1_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_off(NAV);  // Release LAYER1
+            break;
+        case TD_DOUBLE_HOLD:
+            layer_off(WM);  // Release LAYER2
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+// Tap dance layer handling for TD_LAYER_HOLD_2
+void layer2_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_on(SYM);  // Single hold activates LAYER3
+            break;
+        case TD_DOUBLE_HOLD:
+            layer_on(NUM);  // Double hold activates LAYER4
+            break;
+        default:
+            break;
+    }
+}
+
+void layer2_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_HOLD:
+            layer_off(SYM);  // Release LAYER3
+            break;
+        case TD_DOUBLE_HOLD:
+            layer_off(NUM);  // Release LAYER4
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+// Tap dance layer handling for TD_LAYER_HOLD_2
+void undo_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_LGUI);
+            register_code(KC_Z);
+            break;
+        case TD_DOUBLE_TAP:
+            register_code(KC_LGUI);
+            register_code(KC_LSFT);
+            register_code(KC_Z);
+            break;
+        default:
+            break;
+    }
+}
+
+void undo_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_Z);
+            break;
+        case TD_DOUBLE_TAP:
+            unregister_code(KC_LGUI);
+            unregister_code(KC_LSFT);
+            unregister_code(KC_Z);
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+// Tap dance actions with different layers
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_UNDO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, undo_finished, undo_reset),
+    [TD_LAYER_HOLD_1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer1_finished, layer1_reset),
+    [TD_LAYER_HOLD_2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer2_finished, layer2_reset),
+};
+
+#define TD_NW TD(TD_LAYER_HOLD_1)
+#define TD_SN TD(TD_LAYER_HOLD_2)
+#define TD_Z TD(TD_UNDO)
+
+// Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LA_DES,  LA_NAV,  LA_WM,            KC_ENT,  LA_SYM,  LA_NUM
+                                   LA_WM,   TD_NW,  KC_SPC,            KC_ENT,  TD_SN,   LA_DES
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        MR_Z,    MR_X,    MR_C,    MR_V,    MR_RD,                              XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    MR_S,    MR_PRT,  MR_NXT,  MR_SW,                              XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        MR_A,    MR_X,    MR_C,    MR_V,    TD_Z,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+                                   ____,    ____,    ____,             ____,    ____,    ____
+    ),
+
+    [WM] = LAYOUT_split_3x5_3(
+        XXXX,    XXXX,    WM_RM,   WM_RP,   XXXX,                               XXXX,    XXXX,    WM_FU,   XXXX,    XXXX,
+        WM_A,    WM_S,    WM_D,    WM_F,    XXXX,                               XXXX,    WM_FL,   WM_FD,   WM_FR,   ____,
+        WM_FS,   XXXX,    XXXX,    XXXX,    WM_SM,                              XXXX,    WM_LA,   WM_LT,   XXXX,    XXXX,
+                                   ____,    ____,    ____,             ____,    LA_WM2,  ____
+    ),
+
+    [WM2] = LAYOUT_split_3x5_3(
+        XXXX,    XXXX,    ____,    ____,    XXXX,                               XXXX,    XXXX,    WM_MU,   XXXX,    XXXX,
+        WM_AA,   WM_AS,   WM_AD,   WM_AF,   XXXX,                               XXXX,    WM_ML,   WM_MD,   WM_MR,   ____,
+        ____,    XXXX,    XXXX,    ____,    ____,                               XXXX,    ____,    ____,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
-        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_CIRC, XXXX,
-        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_SCLN, ____,
-        KC_PIPE, XXXX,    KC_AMPR, KC_AT,   XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
+        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_HASH, KC_CIRC,
+        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AMPR,                            KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
+        KC_DQT,  KC_TILD, KC_AT,   KC_UNDS, XXXX,                               XXXX,    KC_PLUS, KC_LT,   KC_GT,   KC_QUES,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [NUM] = LAYOUT_split_3x5_3(
-        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_CIRC, XXXX,
-        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_SCLN, ____,
-        KC_0,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
+        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_COLN, KC_CIRC,
+        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_PIPE, KC_EQL,  KC_MINS, KC_SCLN, ____,
+        KC_0,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_LT,   KC_GT,   KC_HASH,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -208,23 +373,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [DES] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        KC_LCTL, KC_LOPT, KC_LSFT, KC_LCMD, XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        KC_SPC,  XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
-    ),
-
-    [WM] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    WM_RM,   WM_RP,   XXXX,                               XXXX,    XXXX,    WM_FU,   XXXX,    XXXX,
-        WM_A,    WM_S,    WM_D,    WM_F,    WM_SM,                              XXXX,    WM_FL,   WM_FD,   WM_FR,   ____,
-        WM_FS,   XXXX,    XXXX,    WM_AT,   XXXX,                               XXXX,    WM_LA,   WM_LT,   XXXX,    XXXX,
-                                   ____,    ____,    ____,             LA_WM2,  ____,    ____
-    ),
-
-    [WM2] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    ____,    ____,    XXXX,                               XXXX,    XXXX,    WM_MU,   XXXX,    XXXX,
-        WM_AA,   WM_AS,   WM_AD,   WM_AF,   WM_SM,                              XXXX,    WM_ML,   WM_MD,   WM_MR,   ____,
-        ____,    XXXX,    XXXX,    ____,    XXXX,                               XXXX,    ____,    ____,    XXXX,    XXXX,
+        XXXX,    XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        KC_BSPC, KC_LOPT, KC_LSFT, KC_LCMD, XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        MR_A,    MR_X,    MR_C,    MR_V,    TD_Z,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 };
@@ -232,7 +383,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 // OSK
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
-    case LA_NAV:
+    case TD_NW:
+    case TD_SN:
         return true;
     default:
         return false;
@@ -241,8 +393,8 @@ bool is_oneshot_cancel_key(uint16_t keycode) {
 
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
-    case LA_NAV:
-    case LA_SYM:
+    case TD_NW:
+    case TD_SN:
     case OS_SHFT:
     case OS_CTRL:
     case OS_ALT:
