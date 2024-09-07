@@ -143,10 +143,10 @@ const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 const uint16_t PROGMEM kl_combo[] = {KC_K, KC_L, COMBO_END};
 
 combo_t key_combos[] = {
-    [CO_WE] = COMBO(we_combo, KC_ESC),
-    [CO_ER] = COMBO(er_combo, MR_R),
-    [CO_SD] = COMBO(sd_combo, KC_TAB),
-    [CO_DF] = COMBO(df_combo, MR_SA),
+    [CO_WE] = COMBO(we_combo, KC_TAB),
+    [CO_ER] = COMBO(er_combo, KC_ESC),
+    // [CO_SD] = COMBO(sd_combo, KC_TAB),
+    // [CO_DF] = COMBO(df_combo, MR_SA),
     [CO_FG] = COMBO(fg_combo, MR_AT),
     [CO_XC] = COMBO(xc_combo, MR_SP),
     [CO_CV] = COMBO(cv_combo, QK_REP),
@@ -157,53 +157,53 @@ combo_t key_combos[] = {
 };
 
 // Auto Shift
-bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_LBRC:
-            return true;
-        case KC_LPRN:
-            return true;
-        case KC_LCBR:
-            return true;
-        default:
-            return false;
-    }
-}
+// bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+//     switch(keycode) {
+//         case KC_LBRC:
+//             return true;
+//         case KC_LPRN:
+//             return true;
+//         case KC_LCBR:
+//             return true;
+//         default:
+//             return false;
+//     }
+// }
 
-void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_LBRC:
-            register_code16((!shifted) ? KC_LBRC : KC_RBRC);
-            break;
-        case KC_LPRN:
-            register_code16((!shifted) ? KC_LPRN : KC_RPRN);
-            break;
-        case KC_LCBR:
-            register_code16((!shifted) ? KC_LCBR : KC_RCBR);
-            break;
-        default:
-            if (shifted) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-            }
-            register_code16(keycode);
-    }
-}
+// void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+//     switch(keycode) {
+//         case KC_LBRC:
+//             register_code16((!shifted) ? KC_LBRC : KC_RBRC);
+//             break;
+//         case KC_LPRN:
+//             register_code16((!shifted) ? KC_LPRN : KC_RPRN);
+//             break;
+//         case KC_LCBR:
+//             register_code16((!shifted) ? KC_LCBR : KC_RCBR);
+//             break;
+//         default:
+//             if (shifted) {
+//                 add_weak_mods(MOD_BIT(KC_LSFT));
+//             }
+//             register_code16(keycode);
+//     }
+// }
 
-void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_LBRC:
-            unregister_code16((!shifted) ? KC_LBRC : KC_RBRC);
-            break;
-        case KC_LPRN:
-            unregister_code16((!shifted) ? KC_LPRN : KC_RPRN);
-            break;
-        case KC_LCBR:
-            unregister_code16((!shifted) ? KC_LCBR : KC_RCBR);
-            break;
-        default:
-            unregister_code16(keycode);
-    }
-}
+// void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+//     switch(keycode) {
+//         case KC_LBRC:
+//             unregister_code16((!shifted) ? KC_LBRC : KC_RBRC);
+//             break;
+//         case KC_LPRN:
+//             unregister_code16((!shifted) ? KC_LPRN : KC_RPRN);
+//             break;
+//         case KC_LCBR:
+//             unregister_code16((!shifted) ? KC_LCBR : KC_RCBR);
+//             break;
+//         default:
+//             unregister_code16(keycode);
+//     }
+// }
 
 // OSK
 oneshot_state os_shft_state = os_up_unqueued;
@@ -482,7 +482,6 @@ void a_ctl_reset(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = TD_NONE;
 }
 
-// Tap dance actions with different layers
 tap_dance_action_t tap_dance_actions[] = {
     [TD_LAYER_HOLD_1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer1_finished, layer1_reset),
     [TD_LAYER_HOLD_2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer2_finished, layer2_reset),
@@ -503,9 +502,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        XXXX,    MR_S,    MR_PRT,  MR_NXT,  MR_SW,                              XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                              XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        MR_A,    MR_X,    MR_C,    MR_V,    TD_Z,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    MR_S,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        MR_SA,   KC_LALT, KC_LSFT, KC_LGUI, XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        XXXX,    XXXX,    MR_AT,   MR_SW,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -524,16 +523,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
-        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_HASH, KC_CIRC,
-        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AMPR,                            KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
-        KC_DQT,  KC_TILD, KC_AT,   KC_UNDS, XXXX,                               XXXX,    KC_PLUS, KC_LT,   KC_GT,   KC_QUES,
+        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, XXXX,                               XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_CIRC,
+        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_ASTR, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
+        KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [NUM] = LAYOUT_split_3x5_3(
-        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_ASTR, KC_PERC, KC_COLN, KC_CIRC,
-        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_PIPE, KC_EQL,  KC_MINS, KC_SCLN, ____,
-        KC_0,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_LT,   KC_GT,   KC_HASH,
+        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_CIRC,
+        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_ASTR, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
+        KC_0,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 

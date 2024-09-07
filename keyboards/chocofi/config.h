@@ -9,7 +9,7 @@
 #define USE_SERIAL
 #define SOFT_SERIAL_PIN D2
 
-#define TAPPING_TERM 180
+#define TAPPING_TERM 200
 #define TAPPING_TOGGLE 1
 
 #define AUTO_SHIFT_TIMEOUT 185
