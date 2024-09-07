@@ -8,28 +8,31 @@ void update_oneshot(
     keyrecord_t *record
 ) {
     if (keycode == trigger) {
-        if (record->event.pressed) {
-            // Trigger keydown
-            if (*state == os_up_unqueued) {
-                register_code(mod);
-            }
-            *state = os_down_unused;
-        } else {
-            // Trigger keyup
-            switch (*state) {
-            case os_down_unused:
-                // If we didn't use the mod while trigger was held, queue it.
-                *state = os_up_queued;
-                break;
-            case os_down_used:
-                // If we did use the mod while trigger was held, unregister it.
-                *state = os_up_unqueued;
-                unregister_code(mod);
-                break;
-            default:
-                break;
-            }
-        }
+        // if (record->event.pressed) {
+        //     // Trigger keydown
+        //     if (*state == os_up_unqueued) {
+        //         register_code(mod);
+        //     }
+        //     *state = os_down_unused;
+        // } else {
+        //     // Trigger keyup
+        //     switch (*state) {
+        //     case os_down_unused:
+        //         // If we didn't use the mod while trigger was held, queue it.
+        //         *state = os_up_queued;
+        //         break;
+        //     case os_down_used:
+        //         // If we did use the mod while trigger was held, unregister it.
+        //         *state = os_up_unqueued;
+        //         unregister_code(mod);
+        //         break;
+        //     default:
+        //         break;
+        //     }
+        // }
+
+        register_code(mod);
+        *state = os_up_queued;
     } else {
         if (record->event.pressed) {
             if (is_oneshot_cancel_key(keycode) && *state != os_up_unqueued) {

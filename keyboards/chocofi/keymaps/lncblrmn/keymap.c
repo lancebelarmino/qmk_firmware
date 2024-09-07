@@ -49,6 +49,38 @@
 #define CK_RANG S(KC_DOT)
 #define CK_RANG S(KC_DOT)
 
+typedef enum {
+    TD_NONE,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_HOLD,
+    TD_SINGLE_TAP,
+    TD_DOUBLE_TAP,
+    TD_OSK
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+enum {
+    TD_LAYER_HOLD_1,
+    TD_LAYER_HOLD_2,
+    TD_UNDO,
+    TD_F_GUI,
+    TD_D_SFT,
+    TD_S_OPT,
+    TD_A_CTL,
+};
+
+#define TD_NW TD(TD_LAYER_HOLD_1)
+#define TD_SN TD(TD_LAYER_HOLD_2)
+#define TD_Z TD(TD_UNDO)
+#define TD_F TD(TD_F_GUI)
+#define TD_D TD(TD_D_SFT)
+#define TD_S TD(TD_S_OPT)
+#define TD_A TD(TD_A_CTL)
+
 #define XXXX KC_NO
 #define ____ KC_TRNS
 
@@ -173,34 +205,59 @@ void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record)
     }
 }
 
-// Tap dance states (focused on hold)
-typedef enum {
-    TD_NONE,
-    TD_SINGLE_HOLD,
-    TD_DOUBLE_HOLD,
-    TD_SINGLE_TAP,
-    TD_DOUBLE_TAP
-} td_state_t;
+// OSK
+oneshot_state os_shft_state = os_up_unqueued;
+oneshot_state os_ctrl_state = os_up_unqueued;
+oneshot_state os_alt_state = os_up_unqueued;
+oneshot_state os_cmd_state = os_up_unqueued;
 
-typedef struct {
-    bool is_press_action;
-    td_state_t state;
-} td_tap_t;
+void update_all_oneshots(uint16_t keycode, keyrecord_t *record) {
+    update_oneshot(&os_shft_state, KC_LSFT, OS_SHFT, keycode, record);
+    update_oneshot(&os_ctrl_state, KC_LCTL, OS_CTRL, keycode, record);
+    update_oneshot(&os_alt_state, KC_LALT, OS_ALT, keycode, record);
+    update_oneshot(&os_cmd_state, KC_LCMD, OS_CMD, keycode, record);
+}
 
-// Tap dance enums
-enum {
-    TD_LAYER_HOLD_1,
-    TD_LAYER_HOLD_2,
-    TD_UNDO
-};
+void td_update_all_oneshots(uint16_t keycode) {
+    keyrecord_t mock_record;
+    mock_record.event.pressed = false; 
+    update_all_oneshots(keycode, &mock_record);
+}
 
-// Create an instance of 'td_tap_t' for the tap dance
+bool is_oneshot_cancel_key(uint16_t keycode) {
+    switch (keycode) {
+    case TD_NW:
+    case TD_SN:
+        return true;
+    default:
+        return false;
+    }
+}
+
+bool is_oneshot_ignored_key(uint16_t keycode) {
+    switch (keycode) {
+    case TD_NW:
+    case TD_SN:
+    case TD_F:
+    case TD_D:
+    case TD_S:
+    case TD_A:
+    case OS_SHFT:
+    case OS_CTRL:
+    case OS_ALT:
+    case OS_CMD:
+        return true;
+    default:
+        return false;
+    }
+}
+
+// Tap Dance
 static td_tap_t td_layer_state = {
     .is_press_action = true,
     .state = TD_NONE
 };
 
-// Determine the current tap dance state
 td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count == 1) {
         return state->pressed ? TD_SINGLE_HOLD : TD_SINGLE_TAP;
@@ -210,7 +267,15 @@ td_state_t cur_dance(tap_dance_state_t *state) {
     return TD_NONE;
 }
 
-// Tap dance layer handling for TD_LAYER_HOLD_1
+td_state_t osk_cur_dance(tap_dance_state_t *state) {
+    if (state->pressed) {
+        return TD_OSK;
+    } else {
+      return TD_SINGLE_TAP;
+    }
+    return TD_NONE;
+}
+
 void layer1_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = cur_dance(state);
     switch (td_layer_state.state) {
@@ -239,7 +304,6 @@ void layer1_reset(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = TD_NONE;
 }
 
-// Tap dance layer handling for TD_LAYER_HOLD_2
 void layer2_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = cur_dance(state);
     switch (td_layer_state.state) {
@@ -268,7 +332,6 @@ void layer2_reset(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = TD_NONE;
 }
 
-// Tap dance layer handling for TD_LAYER_HOLD_2
 void undo_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = cur_dance(state);
     switch (td_layer_state.state) {
@@ -303,22 +366,138 @@ void undo_reset(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = TD_NONE;
 }
 
+void f_gui_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = osk_cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_F);
+            td_update_all_oneshots(KC_F);
+            break;
+        case TD_OSK: {
+            keyrecord_t mock_record;
+            mock_record.event.pressed = true; 
+            update_oneshot(&os_cmd_state, KC_LCMD, OS_CMD, OS_CMD, &mock_record);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void f_gui_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_F);
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+void d_sft_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = osk_cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_D);
+            td_update_all_oneshots(KC_D);
+            break;
+        case TD_OSK: {
+            keyrecord_t mock_record;
+            mock_record.event.pressed = true; 
+            update_oneshot(&os_shft_state, KC_LSFT, OS_SHFT, OS_SHFT, &mock_record);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void d_sft_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_D);
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+void s_opt_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = osk_cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_S);
+            td_update_all_oneshots(KC_S);
+            break;
+        case TD_OSK: {
+            keyrecord_t mock_record;
+            mock_record.event.pressed = true; 
+            update_oneshot(&os_alt_state, KC_LALT, OS_ALT, OS_ALT, &mock_record);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void s_opt_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_S);
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
+void a_ctl_finished(tap_dance_state_t *state, void *user_data) {
+    td_layer_state.state = osk_cur_dance(state);
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            register_code(KC_A);
+            td_update_all_oneshots(KC_A);
+            break;
+        case TD_OSK: {
+            keyrecord_t mock_record;
+            mock_record.event.pressed = true; 
+            update_oneshot(&os_ctrl_state, KC_LCTL, OS_CTRL, OS_CTRL, &mock_record);
+            break;
+        }
+        default:
+            break;
+    }
+}
+
+void a_ctl_reset(tap_dance_state_t *state, void *user_data) {
+    switch (td_layer_state.state) {
+        case TD_SINGLE_TAP:
+            unregister_code(KC_A);
+            break;
+        default:
+            break;
+    }
+    td_layer_state.state = TD_NONE;
+}
+
 // Tap dance actions with different layers
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_UNDO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, undo_finished, undo_reset),
     [TD_LAYER_HOLD_1] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer1_finished, layer1_reset),
     [TD_LAYER_HOLD_2] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, layer2_finished, layer2_reset),
+    [TD_UNDO] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, undo_finished, undo_reset),
+    [TD_F_GUI] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, f_gui_finished, f_gui_reset),
+    [TD_D_SFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, d_sft_finished, d_sft_reset),
+    [TD_S_OPT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, s_opt_finished, s_opt_reset),
+    [TD_A_CTL] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, a_ctl_finished, a_ctl_reset),
 };
-
-#define TD_NW TD(TD_LAYER_HOLD_1)
-#define TD_SN TD(TD_LAYER_HOLD_2)
-#define TD_Z TD(TD_UNDO)
 
 // Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
+        TD_A,    TD_S,    TD_D,    TD_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
                                    LA_WM,   TD_NW,  KC_SPC,            KC_ENT,  TD_SN,   LA_DES
     ),
@@ -380,57 +559,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-// OSK
-bool is_oneshot_cancel_key(uint16_t keycode) {
-    switch (keycode) {
-    case TD_NW:
-    case TD_SN:
-        return true;
-    default:
-        return false;
-    }
-}
-
-bool is_oneshot_ignored_key(uint16_t keycode) {
-    switch (keycode) {
-    case TD_NW:
-    case TD_SN:
-    case OS_SHFT:
-    case OS_CTRL:
-    case OS_ALT:
-    case OS_CMD:
-        return true;
-    default:
-        return false;
-    }
-}
-
-oneshot_state os_shft_state = os_up_unqueued;
-oneshot_state os_ctrl_state = os_up_unqueued;
-oneshot_state os_alt_state = os_up_unqueued;
-oneshot_state os_cmd_state = os_up_unqueued;
-
 bool is_alt_tab_active = false;
 uint16_t alt_tab_timer = 0;     
 
 // Macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    update_oneshot(
-        &os_shft_state, KC_LSFT, OS_SHFT,
-        keycode, record
-    );
-    update_oneshot(
-        &os_ctrl_state, KC_LCTL, OS_CTRL,
-        keycode, record
-    );
-    update_oneshot(
-        &os_alt_state, KC_LALT, OS_ALT,
-        keycode, record
-    );
-    update_oneshot(
-        &os_cmd_state, KC_LCMD, OS_CMD,
-        keycode, record
-    );
+    update_all_oneshots(keycode, record);
 
     switch (keycode) {
       case MR_AS:
