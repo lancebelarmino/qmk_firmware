@@ -2,8 +2,8 @@
 
 #include "oneshot.h"
 
-#define LA_NAV NAV
-#define LA_WM  WM
+#define LA_NAV MO(NAV)
+#define LA_WM  MO(WM)
 #define LA_SYM MO(SYM)
 #define LA_DES LT(DES, KC_ESC)
 #define LA_WM2 MO(WM2)
@@ -48,6 +48,8 @@
 #define CK_LANG S(KC_COMM)
 #define CK_RANG S(KC_DOT)
 #define CK_RANG S(KC_DOT)
+
+#define MT_SPC SFT_T(KC_SPC)
 
 typedef enum {
     TD_NONE,
@@ -212,10 +214,10 @@ oneshot_state os_alt_state = os_up_unqueued;
 oneshot_state os_cmd_state = os_up_unqueued;
 
 void update_all_oneshots(uint16_t keycode, keyrecord_t *record) {
-    update_oneshot(&os_shft_state, KC_LSFT, OS_SHFT, keycode, record);
-    update_oneshot(&os_ctrl_state, KC_LCTL, OS_CTRL, keycode, record);
-    update_oneshot(&os_alt_state, KC_LALT, OS_ALT, keycode, record);
     update_oneshot(&os_cmd_state, KC_LCMD, OS_CMD, keycode, record);
+    update_oneshot(&os_shft_state, KC_LSFT, OS_SHFT, keycode, record);
+    update_oneshot(&os_alt_state, KC_LALT, OS_ALT, keycode, record);
+    update_oneshot(&os_ctrl_state, KC_LCTL, OS_CTRL, keycode, record);
 }
 
 void td_update_all_oneshots(uint16_t keycode) {
@@ -263,15 +265,6 @@ td_state_t cur_dance(tap_dance_state_t *state) {
         return state->pressed ? TD_SINGLE_HOLD : TD_SINGLE_TAP;
     } else if (state->count == 2) {
         return state->pressed ? TD_DOUBLE_HOLD : TD_DOUBLE_TAP;
-    }
-    return TD_NONE;
-}
-
-td_state_t osk_cur_dance(tap_dance_state_t *state) {
-    if (state->pressed) {
-        return TD_OSK;
-    } else {
-      return TD_SINGLE_TAP;
     }
     return TD_NONE;
 }
@@ -366,10 +359,26 @@ void undo_reset(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = TD_NONE;
 }
 
+td_state_t osk_cur_dance(tap_dance_state_t *state) {
+    if (!state->interrupted && state->pressed) {
+        return TD_OSK;
+    } else if (state->count == 1) {
+        return TD_SINGLE_TAP;
+    } else if (state->count == 2) {
+        return TD_DOUBLE_TAP;
+    }
+    return TD_NONE;
+}
+
 void f_gui_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = osk_cur_dance(state);
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+            register_code(KC_F);
+            td_update_all_oneshots(KC_F);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_F); 
             register_code(KC_F);
             td_update_all_oneshots(KC_F);
             break;
@@ -387,6 +396,7 @@ void f_gui_finished(tap_dance_state_t *state, void *user_data) {
 void f_gui_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+        case TD_DOUBLE_TAP:
             unregister_code(KC_F);
             break;
         default:
@@ -399,6 +409,11 @@ void d_sft_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = osk_cur_dance(state);
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+            register_code(KC_D);
+            td_update_all_oneshots(KC_D);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_D); 
             register_code(KC_D);
             td_update_all_oneshots(KC_D);
             break;
@@ -416,6 +431,7 @@ void d_sft_finished(tap_dance_state_t *state, void *user_data) {
 void d_sft_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+        case TD_DOUBLE_TAP:
             unregister_code(KC_D);
             break;
         default:
@@ -428,6 +444,11 @@ void s_opt_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = osk_cur_dance(state);
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+            register_code(KC_S);
+            td_update_all_oneshots(KC_S);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_S); 
             register_code(KC_S);
             td_update_all_oneshots(KC_S);
             break;
@@ -445,6 +466,7 @@ void s_opt_finished(tap_dance_state_t *state, void *user_data) {
 void s_opt_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+        case TD_DOUBLE_TAP:
             unregister_code(KC_S);
             break;
         default:
@@ -457,6 +479,11 @@ void a_ctl_finished(tap_dance_state_t *state, void *user_data) {
     td_layer_state.state = osk_cur_dance(state);
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+            register_code(KC_A);
+            td_update_all_oneshots(KC_A);
+            break;
+        case TD_DOUBLE_TAP:
+            tap_code(KC_A); 
             register_code(KC_A);
             td_update_all_oneshots(KC_A);
             break;
@@ -474,6 +501,7 @@ void a_ctl_finished(tap_dance_state_t *state, void *user_data) {
 void a_ctl_reset(tap_dance_state_t *state, void *user_data) {
     switch (td_layer_state.state) {
         case TD_SINGLE_TAP:
+        case TD_DOUBLE_TAP:
             unregister_code(KC_A);
             break;
         default:
@@ -498,13 +526,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         TD_A,    TD_S,    TD_D,    TD_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LA_WM,   TD_NW,  KC_SPC,            KC_ENT,  TD_SN,   LA_DES
+                                   LA_WM,   LA_NAV,  MT_SPC,           KC_ENT,  TD_SN,   LA_NUM
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        XXXX,    MR_S,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        MR_SA,   KC_LALT, KC_LSFT, KC_LGUI, XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        XXXX,    XXXX,    MR_AT,   MR_SW,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    MR_SA,   MR_AT,   MR_SW,   XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        KC_TAB,  KC_LALT, KC_LSFT, KC_LGUI, XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        XXXX,    XXXX,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -524,15 +552,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [SYM] = LAYOUT_split_3x5_3(
         KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, XXXX,                               XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_CIRC,
-        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_ASTR, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
+        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_ASTR, KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
         KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [NUM] = LAYOUT_split_3x5_3(
         XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_CIRC,
-        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_ASTR, KC_EQL,  KC_MINS, KC_COLN, KC_SCLN,
-        KC_0,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
+        KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_ASTR, KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
+        XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
