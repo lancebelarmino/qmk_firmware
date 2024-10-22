@@ -47,7 +47,7 @@
 #define CK_RANG S(KC_DOT)
 #define CK_RANG S(KC_DOT)
 
-#define MT_SPC SFT_T(KC_SPC)
+#define MT_SPC LCTL_T(KC_SPC)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -85,32 +85,13 @@ enum keycodes {
 
 // Combos
 enum {
-    CO_WE,
-    CO_ER,
-    CO_XC,
-    CO_CV,
-    CO_MCOMM,
-    CO_COMMDOT,
-    CO_KL
+    CO_SD,
 };
 
-const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
-const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
-const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
-const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
-const uint16_t PROGMEM mcomm_combo[] = {KC_M, KC_COMM, COMBO_END};
-const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
-const uint16_t PROGMEM kl_combo[] = {KC_K, KC_L, COMBO_END};
+const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 
 combo_t key_combos[] = {
-    [CO_WE] = COMBO(we_combo, MR_SA),
-    [CO_ER] = COMBO(er_combo, MR_SW),
-    [CO_XC] = COMBO(xc_combo, MR_SP),
-    [CO_CV] = COMBO(cv_combo, MR_CO),
-    [CO_MCOMM] = COMBO(mcomm_combo, KC_F12),
-    [CO_COMMDOT] = COMBO(commdot_combo, KC_F3),
-
-    [CO_KL] = COMBO(kl_combo, KC_ENT),
+    [CO_SD] = COMBO(sd_combo, MR_SP)
 };
 
 // OSK
@@ -153,9 +134,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        XXXX,    MR_SA,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
+        XXXX,    XXXX,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
         KC_TAB,  OS_ALT,  OS_SHFT, OS_CMD,  QK_REP,                             XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        WM_A,    WM_S,    WM_D,    WM_F,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        KC_F12,  KC_F3,   MR_SW,   MR_SA,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
