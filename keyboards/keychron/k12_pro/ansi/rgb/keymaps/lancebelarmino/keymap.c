@@ -16,6 +16,8 @@
 
 #include QMK_KEYBOARD_H
 
+#define LT_SP LT(NAV, KC_SPC)
+
 // clang-format off
 enum layers {
   MAC_BASE,
@@ -29,9 +31,6 @@ enum layers {
 
 enum tapdance_keycodes {
     TD_CAPS,
-    TD_ESC,
-    TD_BSLS,
-    TD_DLR,
 };
 
 enum custom_keycodes {
@@ -48,9 +47,6 @@ enum {
 
 tap_dance_action_t tap_dance_actions[] = {
     [TD_CAPS] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_CAPS),
-    [TD_ESC] = ACTION_TAP_DANCE_DOUBLE(KC_GRAVE, KC_ESC),
-    [TD_BSLS] = ACTION_TAP_DANCE_DOUBLE(KC_BSLS, KC_AT),
-    [TD_DLR] = ACTION_TAP_DANCE_DOUBLE(KC_DLR, KC_CIRC),
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -64,22 +60,22 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MAC_BASE] = LAYOUT_61_ansi(
         KC_ESC,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
-        TT(NAV),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,
+        KC_ESC,   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            TD(TD_CAPS),
-        KC_LCTL,  KC_LOPTN, KC_LGUI,                                KC_SPC,                                 TO(GAMING),OSL(FUNC),TO(FUNC),TO(MAC_BASE)),
+        KC_LCTL,  KC_LOPTN, KC_LGUI,                                LT_SP,                                  TO(GAMING),OSL(FUNC),TO(FUNC),TO(MAC_BASE)),
 
     [WIN_BASE] = LAYOUT_61_ansi(
-        TD(TD_ESC),KC_1,    KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
+        KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,   KC_BSPC,
         KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,
-        TT(NAV),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  LT(MENU,  KC_QUOT), KC_ENT,
+        KC_ESC,   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  LT(MENU,  KC_QUOT), KC_ENT,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,            TD(TD_CAPS),
-        KC_LCTL,  KC_LGUI, KC_LALT,                                KC_SPC,                                 TO(GAMING),OSL(FUNC),TO(FUNC),TO(WIN_BASE)),
+        KC_LCTL,  KC_LGUI, KC_LALT,                                 LT_SP,                                  TO(GAMING),OSL(FUNC),TO(FUNC),TO(WIN_BASE)),
 
     [NAV] = LAYOUT_61_ansi(
         KC_ESC,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,
         KC_TAB,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  KC_UP,    _______,  _______,  _______,  _______,  _______,
-        TO(WIN_BASE),_______,_______, _______,  _______,  _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, _______,  _______,            KC_ENT,
-        KC_LSFT,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            KC_RSFT,
+        KC_ESC,   KC_SPC,   KC_LALT,  KC_LSFT,  KC_LGUI,  _______,  _______,  KC_LEFT,  KC_DOWN,  KC_RIGHT, _______,  _______,            KC_ENT,
+        KC_LSFT,            _______,  _______,  _______,  KC_F12,   _______,  _______,  _______,  _______,  _______,  _______,            KC_RSFT,
         KC_LCTL,  KC_LGUI,  KC_LALT,                                _______,                                TO(GAMING),OSL(FUNC), TO(FUNC),TO(WIN_BASE)),
 
     [MENU] = LAYOUT_61_ansi(
