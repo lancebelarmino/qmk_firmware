@@ -5,7 +5,7 @@
 #define LA_NAV MO(NAV)
 #define LA_WM  LT(WM, KC_ESC)
 #define LA_SYM MO(SYM)
-#define LA_NUM MO(NUM)
+#define LA_MACRO MO(MACRO)
 
 #define MR_SP G(KC_SPC)
 #define MR_QS G(KC_TAB)
@@ -48,6 +48,7 @@
 #define CK_RANG S(KC_DOT)
 
 #define MT_SPC LCTL_T(KC_SPC)
+#define MT_ENT LCTL_T(KC_ENT)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -58,7 +59,8 @@ enum layers {
     SYM,
     FUN,
     WM,
-    NUM
+    NUM,
+    MACRO
 };
 
 enum keycodes {
@@ -130,7 +132,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LA_WM,   LA_NAV,  MT_SPC,           KC_ENT,  LA_SYM,  LA_NUM
+                                   LA_WM,   LA_NAV,  KC_SPC,           MT_ENT,  LA_SYM,  LA_MACRO
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
@@ -148,6 +150,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
+        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
+        XXXX,    KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_GRV,  KC_TILD, KC_BSLS, XXXX,
+                                   ____,    ____,    ____,             ____,    ____,    ____
+    ),
+
+    [SYM] = LAYOUT_split_3x5_3(
         KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, KC_CIRC,                            XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_HASH,
         KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_ASTR, KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
         KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_COLN, KC_TILD,
@@ -155,9 +164,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [NUM] = LAYOUT_split_3x5_3(
-        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_CIRC,
-        KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               KC_ASTR, KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
-        XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_TILD, KC_HASH,
+        XXXX,    KC_F1,   KC_F2,   KC_F3,   XXXX,                               XXXX,    KC_F4,   KC_F5,   KC_F6,   XXXX,
+        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+        XXXX,    KC_F7,   KC_F8,   KC_F9,   XXXX,                               XXXX,    KC_F10,  KC_F11,  KC_F12,  XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -168,10 +177,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     //                                ____,    ____,    ____,             ____,    ____,    ____
     // ),
 
-    [FUN] = LAYOUT_split_3x5_3(
-        MR_WF,   XXXX,    MR_ZO,   MR_ZI,   XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
-        KC_CAPS, OS_CTRL, OS_ALT,  OS_CMD,  MR_SC,                              MR_CL,   KC_F5,   KC_F6,   KC_F7,   KC_F8,
-        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
+    // [FUN] = LAYOUT_split_3x5_3(
+    //     KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,
+    //     XXXX,    XXXX,    XXXX,    KC_F11,  XXXX,                               XXXX,    KC_F12,  XXXX,    XXXX,    XXXX,
+    //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+    //                                ____,    ____,    ____,             ____,    ____,    ____
+    // ),
+
+    [MACRO] = LAYOUT_split_3x5_3(
+        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        KC_CAPS, MR_WF,   MR_ZO,   MR_ZI,   MR_SC,                              XXXX,    MR_CL,   MR_SC,   XXXX,    XXXX,
+        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 };
@@ -326,5 +342,5 @@ void matrix_scan_user(void) {
 }
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, NAV, SYM, FUN);
+  return update_tri_layer_state(state, NAV, SYM, NUM);
 }
