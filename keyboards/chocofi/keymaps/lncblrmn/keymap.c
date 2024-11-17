@@ -150,16 +150,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
-        XXXX,    KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_GRV,  KC_TILD, KC_BSLS, XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
-    ),
-
-    [SYM] = LAYOUT_split_3x5_3(
-        KC_BSLS, KC_GRV,  KC_DLR,  KC_EXLM, KC_CIRC,                            XXXX,    KC_AMPR, KC_PERC, KC_PIPE, KC_HASH,
-        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_ASTR, KC_EQL,  KC_MINS, KC_SCLN, KC_BSPC,
-        KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_UNDS, KC_COLN, KC_TILD,
+        KC_TILD, KC_CIRC, KC_DLR,  KC_EXLM, KC_PLUS,                            XXXX,    KC_UNDS, KC_GRV,  KC_HASH, KC_BSLS,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_PERC, KC_QUOT, KC_DQT,  KC_COLN, KC_SCLN,
+        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, KC_ASTR,                            KC_PIPE, KC_MINS, KC_LT,   KC_GT,   KC_QUES,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
