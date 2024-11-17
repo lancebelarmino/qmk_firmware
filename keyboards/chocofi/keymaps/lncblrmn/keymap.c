@@ -7,18 +7,8 @@
 #define LA_SYM MO(SYM)
 #define LA_MACRO MO(MACRO)
 
-#define MR_SP G(KC_SPC)
-#define MR_QS G(KC_TAB)
-#define MR_CO G(KC_SLSH)
-#define MR_Z G(KC_Z)
-#define MR_RD LSG(KC_Z)
-#define MR_X G(KC_X)
-#define MR_C G(KC_C)
-#define MR_V G(KC_V)
-#define MR_S G(KC_S)
-#define MR_R G(KC_R)
 #define MR_SA G(KC_TAB)
-#define MR_A G(KC_A)
+#define MR_S G(KC_S)
 
 #define WM_A A(KC_A)
 #define WM_S A(KC_S)
@@ -88,12 +78,15 @@ enum keycodes {
 // Combos
 enum {
     CO_SD,
+    CO_DF
 };
 
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
+const uint16_t PROGMEM df_combo[] = {KC_D, KC_F, COMBO_END};
 
 combo_t key_combos[] = {
-    [CO_SD] = COMBO(sd_combo, MR_SP)
+    [CO_SD] = COMBO(sd_combo, KC_ESC),
+    [CO_DF] = COMBO(df_combo, MR_S),
 };
 
 // OSK
@@ -137,8 +130,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         
     [NAV] = LAYOUT_split_3x5_3(
         XXXX,    XXXX,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    XXXX,    KC_UP,   XXXX,    XXXX,
-        KC_TAB,  OS_ALT,  OS_SHFT, OS_CMD,  QK_REP,                             XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
-        KC_F12,  KC_F3,   MR_SW,   MR_SA,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        KC_TAB,  OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               XXXX,    KC_LEFT, KC_DOWN, KC_RGHT, ____,
+        XXXX,    QK_REP,  MR_SW,   MR_SA,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -337,13 +330,3 @@ void matrix_scan_user(void) {
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, NAV, SYM, NUM);
 }
-
-uint32_t layer_state_set_user(uint32_t state) {
-    if (autoshift_enabled && (state & (1<<BASE))) {
-        autoshift_enable();
-        
-    } else {
-        autoshift_disable();
-    }
-    return state;
-};
