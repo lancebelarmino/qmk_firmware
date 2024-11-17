@@ -337,3 +337,13 @@ void matrix_scan_user(void) {
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, NAV, SYM, NUM);
 }
+
+uint32_t layer_state_set_user(uint32_t state) {
+    if (autoshift_enabled && (state & (1<<BASE))) {
+        autoshift_enable();
+        
+    } else {
+        autoshift_disable();
+    }
+    return state;
+};
