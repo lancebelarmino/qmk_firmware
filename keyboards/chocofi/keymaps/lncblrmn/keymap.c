@@ -2,53 +2,32 @@
 
 #include "oneshot.h"
 
-#define LA_NAV TT(NAV)
-#define LA_WM  LT(WM, KC_ESC)
-#define LA_MS  MO(MOUSE)
+#define TO_BASE TO(BASE)
+#define TO_NAV TO(NAV)
+#define LA_NAV LT(NAV, KC_ESC)
+#define LA_MS  TT(MOUSE)
 #define LA_SYM MO(SYM)
 #define LA_NUM MO(NUM)
 
+// #define OS_MEH OSM(MOD_MASK_CSA)
+
+#define LM_BASE LM(BASE, MOD_LCTL | MOD_LSFT | MOD_LALT)
+
 #define MR_ST G(KC_TAB)
 #define MR_S G(KC_S)
+#define MR_R G(KC_R)
 #define MR_SA G(KC_A)
 #define MR_X G(KC_X)
 #define MR_C G(KC_C)
 #define MR_V G(KC_V)
 #define MR_Q G(KC_Q)
 #define MR_W G(KC_W)
+#define MR_Z G(KC_Z)
+#define MR_RZ LSG(KC_Z)
 
-#define WM_A A(KC_A)
-#define WM_S A(KC_S)
-#define WM_D A(KC_D)
-#define WM_F A(KC_F)
-#define WM_AA LSA(KC_A)
-#define WM_AS LSA(KC_S)
-#define WM_AD LSA(KC_D)
-#define WM_AF LSA(KC_F)
-#define WM_SM LSA(KC_SCLN)
-#define WM_LT A(KC_SLSH)
-#define WM_LA A(KC_COMM)
-#define WM_FU A(KC_I)
-#define WM_FD A(KC_K)
-#define WM_FL A(KC_J)
-#define WM_FR A(KC_L)
-// #define WM_MU LSA(KC_I)
-// #define WM_MD LSA(KC_K)
-// #define WM_ML LSA(KC_J)
-// #define WM_MR LSA(KC_L)
-#define WM_RM LSA(KC_MINS)
-#define WM_RP LSA(KC_EQL)
-#define WM_FS LSA(KC_H)
-
-#define CK_LANG S(KC_COMM)
-#define CK_RANG S(KC_DOT)
-#define CK_RANG S(KC_DOT)
-
+#define MT_SPC LSFT_T(KC_SPC)
 #define MT_ENT LCTL_T(KC_ENT)
-#define MT_BSPC LSFT_T(KC_BSPC)
-#define MT_A LSFT_T(KC_A)
-
-#define LT_BSPC LT(NUM, KC_BSPC)
+#define MT_A MEH_T(KC_A)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -56,6 +35,7 @@
 enum layers {
     BASE,
     NAV,
+    S_NAV,
     SYM,
     FUN,
     WM,
@@ -89,6 +69,8 @@ enum keycodes {
 
 // Combos
 enum {
+    CO_WE,
+    CO_ER,
     CO_SD,
     CO_DF,
     CO_XC,
@@ -99,6 +81,8 @@ enum {
     CO_KL,
 };
 
+const uint16_t PROGMEM wr_combo[] = {KC_W, KC_E, COMBO_END};
+const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_F, KC_D, COMBO_END};
 const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
@@ -110,14 +94,16 @@ const uint16_t PROGMEM kl_combo[] = {KC_K, KC_L, COMBO_END};
 
 
 combo_t key_combos[] = {
-    [CO_SD] = COMBO(sd_combo, KC_TAB),
-    [CO_DF] = COMBO(df_combo, KC_ESC),
+    [CO_WE] = COMBO(wr_combo, MR_Z),
+    [CO_ER] = COMBO(er_combo, MR_RZ),
+    [CO_SD] = COMBO(sd_combo, MR_SW),
+    [CO_DF] = COMBO(df_combo, MR_ST),
     [CO_XC] = COMBO(xc_combo, MR_C),
     [CO_CV] = COMBO(cv_combo, MR_V),
     [CO_XV] = COMBO(xv_combo, MR_SA),
 
-    // [CO_JK] = COMBO(jk_combo, MO(NUM)),
-    [CO_KL] = COMBO(kl_combo, KC_CAPS),
+    [CO_JK] = COMBO(jk_combo, KC_CAPS),
+    // [CO_KL] = COMBO(kl_combo, KC_CAPS),
 };
 
 // OSK
@@ -154,29 +140,29 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        MT_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    MT_BSPC,
+        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LA_MS,   LA_NAV,  KC_SPC,           MT_ENT,  LA_SYM,  LA_NUM
+                                   LM_BASE, LA_NAV,  MT_SPC,           MT_ENT,  LA_SYM,  LA_NUM
     ),
         
     [NAV] = LAYOUT_split_3x5_3(
-        MR_Q,    MR_W,    MR_PRT,  MR_NXT,  MR_BT,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_SW,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_BSPC,
-        XXXX,    XXXX,    MR_AT,   MR_ST,   QK_REP,                             XXXX,    KC_WH_D, KC_WH_U, XXXX,    XXXX,
+        TO_NAV,  MR_AT,   MR_PRT,  MR_NXT,  MR_BT,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+        KC_TAB,  OS_ALT,  OS_SHFT, OS_CMD,  QK_REP,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+        MR_Q,    MR_W,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_WH_D, KC_WH_U, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
-    [WM] = LAYOUT_split_3x5_3(
-        WM_AA,   WM_AS,   WM_AD,   WM_AF,   XXXX,                               XXXX,    XXXX,    WM_FU,   XXXX,    XXXX,
-        WM_RM,   WM_RP,   WM_LA,   WM_LT,   WM_SM,                              XXXX,    WM_FL,   WM_FD,   WM_FR,   ____,
-        WM_A,    WM_S,    WM_D,    WM_F,    WM_FS,                              XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
+    [S_NAV] = LAYOUT_split_3x5_3(
+        ____,    MR_AT,   MR_PRT,  MR_NXT,  MR_BT,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+        KC_TAB,  OS_ALT,  OS_SHFT, OS_CMD,  QK_REP,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+        MR_Q,    MR_W,    MR_AT,   XXXX,    QK_REP,                             XXXX,    KC_WH_D, KC_WH_U, XXXX,    XXXX,
+                                   ____,    TO_BASE, ____,             ____,    ____,    ____
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
         KC_TILD, KC_CIRC, KC_HASH, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_GRV,  KC_BSLS,
-        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_QUOT, KC_DQT,  KC_MINS, KC_SCLN, KC_COLN,
-        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, XXXX,                               XXXX,    KC_PLUS, KC_PERC, KC_PIPE, KC_ASTR,
+        KC_LBRC, KC_LPRN, KC_LCBR, KC_EQL,  KC_AT,                              KC_PLUS, KC_QUOT, KC_MINS, KC_SCLN, KC_COLN,
+        KC_RBRC, KC_RPRN, KC_RCBR, KC_AMPR, XXXX,                               XXXX,    KC_DQT,  KC_PIPE, KC_ASTR, KC_PERC,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -193,13 +179,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         XXXX,    XXXX,    KC_LSFT, KC_LGUI, XXXX,                               XXXX,    KC_WH_D, KC_WH_U, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
-
-    // [FUN] = LAYOUT_split_3x5_3(
-    //     KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,
-    //     XXXX,    XXXX,    XXXX,    KC_F11,  XXXX,                               XXXX,    KC_F12,  XXXX,    XXXX,    XXXX,
-    //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-    //                                ____,    ____,    ____,             ____,    ____,    ____
-    // ),
 
     [MACRO] = LAYOUT_split_3x5_3(
         XXXX,    KC_F1,   KC_F2,   KC_F3,   XXXX,                               XXXX,    KC_F4,   KC_F5,   KC_F6,   XXXX,
