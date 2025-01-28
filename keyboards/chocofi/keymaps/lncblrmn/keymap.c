@@ -2,12 +2,14 @@
 
 #include "oneshot.h"
 
-#define LA_NAV MO(NAV)
-#define LA_MS TT(MOUSE)
-#define LA_SYM MO(SYM)
-#define LA_MACRO MO(MACRO)
-#define LA_WM LT(WM, KC_SPC)
-#define LA_NUM LT(NUM, KC_ENT)
+#define LR_NAV MO(NAV)
+#define LR_MS TT(MOUSE)
+#define LR_SYM MO(SYM)
+#define LR_MACRO MO(MACRO)
+#define LR_WM LCAG_T(KC_SPC)
+#define LR_NUM LT(NUM, KC_ENT)
+
+#define MT_SPC MT(MOD_LSFT, KC_SPC)
 
 #define MR_ST G(KC_TAB)
 #define MR_S G(KC_S)
@@ -25,7 +27,7 @@
 #define MR_VU C(KC_U)
 #define MR_VD C(KC_D)
 
-#define MT_SPC LSFT_T(KC_SPC)
+#define OS_CAG OSM(MOD_LCTL | MOD_LALT | MOD_LGUI)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -34,10 +36,7 @@ enum layers {
     BASE,
     NAV,
     SYM,
-    FUN,
-    WM,
     NUM,
-    MACRO,
     MOUSE,
 };
 
@@ -65,6 +64,7 @@ enum keycodes {
 enum {
     CO_WE,
     CO_ER,
+    CO_WR,
     CO_SD,
     CO_DF,
     CO_SF,
@@ -85,27 +85,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LA_MS,   LA_NAV,  LA_WM,            LA_NUM,  LA_SYM,  QK_REP
+                                   LR_MS,   LR_NAV,  MT_SPC,           LR_NUM,  LR_SYM,  QK_REP
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
-        XXXX,    MR_ZO,   MR_ZI,   MR_SC,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  KC_CAPS,                            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
-        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
-    ),
-
-    [WM] = LAYOUT_split_3x5_3(
-        XXXX,    MR_BT,   MR_PRT,  MR_NXT,  MR_W,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
-        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
+        XXXX,    MR_BT,   MR_PRT,  MR_NXT,  MR_W,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
+        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
         KC_PERC, KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, KC_BSLS,
         KC_GRV,  KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_HASH, KC_EQL,  KC_MINS, KC_COLN, KC_QUOT,
-        KC_TILD, KC_LPRN, KC_RBRC, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_PIPE, KC_SCLN, KC_DQT,
+        KC_TILD, KC_RPRN, KC_RBRC, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_PIPE, KC_SCLN, KC_DQT,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -126,11 +119,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool is_alt_tab_active = false;
 bool is_ctl_tab_active = false;
-uint16_t alt_tab_timer = 0;     
+uint16_t alt_tab_timer = 0;  
 
 // Combos
 const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
 const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
+const uint16_t PROGMEM wr_combo[] = {KC_W, KC_R, COMBO_END};
 const uint16_t PROGMEM sd_combo[] = {KC_S, KC_D, COMBO_END};
 const uint16_t PROGMEM df_combo[] = {KC_F, KC_D, COMBO_END};
 const uint16_t PROGMEM sf_combo[] = {KC_S, KC_F, COMBO_END};
@@ -146,10 +140,11 @@ const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 combo_t key_combos[] = {
     [CO_WE] = COMBO(we_combo, MR_Z),
     [CO_ER] = COMBO(er_combo, MR_RZ),
+    [CO_WR] = COMBO(wr_combo, MR_AT),
     [CO_SD] = COMBO(sd_combo, KC_ESC),
     [CO_DF] = COMBO(df_combo, KC_TAB),
-    [CO_SF] = COMBO(sf_combo, KC_LGUI),
-    [CO_XC] = COMBO(xc_combo, MR_AT),
+    [CO_SF] = COMBO(sf_combo, OS_CAG),
+    [CO_XC] = COMBO(xc_combo, KC_ENT),
     [CO_CV] = COMBO(cv_combo, KC_BSPC),
 
     [CO_UI] = COMBO(ui_combo, KC_LEFT),
@@ -168,8 +163,8 @@ oneshot_state os_cmd_state = os_up_unqueued;
 
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
-    case LA_NAV:
-    case LA_SYM:
+    case LR_NAV:
+    case LR_SYM:
         return true;
     default:
         return false;
@@ -178,8 +173,8 @@ bool is_oneshot_cancel_key(uint16_t keycode) {
 
 bool is_oneshot_ignored_key(uint16_t keycode) {
     switch (keycode) {
-    case LA_NAV:
-    case LA_SYM:
+    case LR_NAV:
+    case LR_SYM:
     case OS_SHFT:
     case OS_CTRL:
     case OS_ALT:
@@ -218,20 +213,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         &os_cmd_state, KC_LCMD, OS_CMD,
         keycode, record
     );
-
-    if (layer_state_is(WM)) {
-        if (keycode >= KC_A && keycode <= KC_EXSEL) {
-            if (record->event.pressed) {
-                register_code(KC_LCTL);
-                register_code(KC_LALT);
-                register_code(KC_LGUI);
-            } else {
-                unregister_code(KC_LCTL);
-                unregister_code(KC_LALT);
-                unregister_code(KC_LGUI);
-            }
-        }
-    }
 
     switch (keycode) {
       case MR_AS:
@@ -362,6 +343,6 @@ void matrix_scan_user(void) {
   }
 }
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, NAV, SYM, NUM);
-}
+// layer_state_t layer_state_set_user(layer_state_t state) {
+//   return update_tri_layer_state(state, NAV, SYM, NUM);
+// }
