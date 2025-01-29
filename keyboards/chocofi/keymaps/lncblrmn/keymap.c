@@ -1,12 +1,13 @@
 #include QMK_KEYBOARD_H
 
 #include "oneshot.h"
+#include "custom_shift_keys.h"
 
 #define LR_NAV MO(NAV)
 #define LR_MS TT(MOUSE)
 #define LR_SYM MO(SYM)
 #define LR_MACRO MO(MACRO)
-#define LR_WM LCAG_T(KC_SPC)
+#define LR_WM LCAG_T(KC_ENT)
 #define LR_NUM LT(NUM, KC_ENT)
 
 #define MT_SPC MT(MOD_LSFT, KC_SPC)
@@ -26,8 +27,6 @@
 #define MR_WH_R S(KC_WH_D)
 #define MR_VU C(KC_U)
 #define MR_VD C(KC_D)
-
-#define OS_CAG OSM(MOD_LCTL | MOD_LALT | MOD_LGUI)
 
 #define XXXX KC_NO
 #define ____ KC_TRNS
@@ -85,20 +84,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LR_MS,   LR_NAV,  MT_SPC,           LR_NUM,  LR_SYM,  QK_REP
+                                   LR_MS,   LR_NAV,  MT_SPC,           LR_WM,   LR_SYM,  QK_REP
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
         XXXX,    MR_BT,   MR_PRT,  MR_NXT,  MR_W,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
         MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
+    // [SYM] = LAYOUT_split_3x5_3(
+    //     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_CIRC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
+    //     KC_0,    KC_4,    KC_5,    KC_6,    TD_AT,                              KC_PIPE, KC_EQL,  TD_QUOT, KC_MINS, TD_COLN,
+    //     KC_TILD, KC_7,    KC_8,    KC_9,    KC_HASH,                            KC_AMPR, TD_CBR,  TD_BRC,  TD_PRN,  KC_PERC,
+    //                                ____,    ____,    ____,             ____,    ____,    ____
+    // ),
+
     [SYM] = LAYOUT_split_3x5_3(
-        KC_PERC, KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, KC_BSLS,
-        KC_GRV,  KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_HASH, KC_EQL,  KC_MINS, KC_COLN, KC_QUOT,
-        KC_TILD, KC_RPRN, KC_RBRC, KC_RCBR, XXXX,                               XXXX,    KC_PLUS, KC_PIPE, KC_SCLN, KC_DQT,
+        XXXX,    KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, XXXX,
+        KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, ____,
+        XXXX,    KC_TILD, KC_PERC, KC_GRV,  XXXX,                               XXXX,    KC_PLUS, KC_HASH, KC_BSLS, XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -110,9 +116,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 
     [MOUSE] = LAYOUT_split_3x5_3(
-        XXXX,    MR_ZO,   MR_ZI,   MR_SC,   XXXX,                               XXXX,    XXXX,    KC_MS_U, XXXX,    XXXX,
-        KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                               XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
-        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+        XXXX,    MR_BT,   MR_PRT,  MR_NXT,  MR_W,                                XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
+        KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, MR_AT,                               XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
+        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 };
@@ -143,7 +149,7 @@ combo_t key_combos[] = {
     [CO_WR] = COMBO(wr_combo, MR_AT),
     [CO_SD] = COMBO(sd_combo, KC_ESC),
     [CO_DF] = COMBO(df_combo, KC_TAB),
-    [CO_SF] = COMBO(sf_combo, OS_CAG),
+    [CO_SF] = COMBO(sf_combo, KC_LGUI),
     [CO_XC] = COMBO(xc_combo, KC_ENT),
     [CO_CV] = COMBO(cv_combo, KC_BSPC),
 
@@ -195,8 +201,19 @@ bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+const custom_shift_key_t custom_shift_keys[] = {
+  {KC_LPRN, KC_RPRN},
+  {KC_LBRC, KC_RBRC},
+  {KC_LCBR, KC_RCBR},
+  {KC_COLN, KC_SCLN},
+};
+
+uint8_t NUM_CUSTOM_SHIFT_KEYS = sizeof(custom_shift_keys) / sizeof(custom_shift_key_t);
+
 // Macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (!process_custom_shift_keys(keycode, record)) { return false; }
+
     update_oneshot(
         &os_shft_state, KC_LSFT, OS_SHFT,
         keycode, record
@@ -343,6 +360,6 @@ void matrix_scan_user(void) {
   }
 }
 
-// layer_state_t layer_state_set_user(layer_state_t state) {
-//   return update_tri_layer_state(state, NAV, SYM, NUM);
-// }
+layer_state_t layer_state_set_user(layer_state_t state) {
+  return update_tri_layer_state(state, NAV, SYM, NUM);
+}
