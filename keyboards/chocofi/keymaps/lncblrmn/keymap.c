@@ -1,7 +1,6 @@
 #include QMK_KEYBOARD_H
 
 #include "oneshot.h"
-#include "custom_shift_keys.h"
 
 #define LR_NAV MO(NAV)
 #define LR_MS TT(MOUSE)
@@ -194,26 +193,63 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
 // Auto Shift
 bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
-        case KC_ESC:
+        case KC_LPRN:
+        case KC_LBRC:
+        case KC_LCBR:
+        case KC_COLN:
             return true;
         default:
             return false;
     }
 }
 
-const custom_shift_key_t custom_shift_keys[] = {
-  {KC_LPRN, KC_RPRN},
-  {KC_LBRC, KC_RBRC},
-  {KC_LCBR, KC_RCBR},
-  {KC_COLN, KC_SCLN},
-};
+void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_LPRN:
+            register_code16((!shifted) ? KC_LPRN : KC_RPRN);
+            break;
+        case KC_LBRC:
+            register_code16((!shifted) ? KC_LBRC : KC_RBRC);
+            break;
+        case KC_LCBR:
+            register_code16((!shifted) ? KC_LCBR : KC_RCBR);
+            break;
+        case KC_COLN:
+            register_code16((!shifted) ? KC_COLN : KC_SCLN);
+            break;
+        default:
+            if (shifted) {
+                add_weak_mods(MOD_BIT(KC_LSFT));
+            }
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
 
-uint8_t NUM_CUSTOM_SHIFT_KEYS = sizeof(custom_shift_keys) / sizeof(custom_shift_key_t);
+void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+    switch(keycode) {
+        case KC_LPRN:
+            unregister_code16((!shifted) ? KC_LPRN : KC_RPRN);
+            break;
+        case KC_LBRC:
+            unregister_code16((!shifted) ? KC_LBRC : KC_RBRC);
+            break;
+        case KC_LCBR:
+            unregister_code16((!shifted) ? KC_LCBR : KC_RCBR);
+            break;
+        case KC_COLN:
+            unregister_code16((!shifted) ? KC_COLN : KC_SCLN);
+            break;
+        default:
+            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
+            // The IS_RETRO check isn't really necessary here, always using
+            // keycode & 0xFF would be fine.
+            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+    }
+}
 
 // Macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (!process_custom_shift_keys(keycode, record)) { return false; }
-
     update_oneshot(
         &os_shft_state, KC_LSFT, OS_SHFT,
         keycode, record
