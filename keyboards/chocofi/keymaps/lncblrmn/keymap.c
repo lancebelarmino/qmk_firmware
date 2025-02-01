@@ -2,14 +2,13 @@
 
 #include "oneshot.h"
 
-#define LR_NAV MO(NAV)
-#define LR_MS TT(MOUSE)
-#define LR_SYM MO(SYM)
-#define LR_MACRO MO(MACRO)
-#define LR_WM LCAG_T(KC_ENT)
-#define LR_NUM LT(NUM, KC_ENT)
+#define LR_NAV LT(NAV, KC_TAB)
+#define LR_SYM LT(SYM, KC_ESC)
+#define LR_MSE LT(MOUSE, QK_REP)
+#define LR_FUN LT(FUNC, QK_REP)
 
 #define MT_SPC MT(MOD_LSFT, KC_SPC)
+#define MT_ENT MT(MOD_LCTL | MOD_LALT | MOD_LGUI, KC_ENT) 
 
 #define MR_ST G(KC_TAB)
 #define MR_S G(KC_S)
@@ -34,7 +33,7 @@ enum layers {
     BASE,
     NAV,
     SYM,
-    NUM,
+    FUNC,
     MOUSE,
 };
 
@@ -77,13 +76,40 @@ enum {
     CO_COMMDOT,
 };
 
+typedef enum {
+    TD_NONE,
+    TD_UNKNOWN,
+    TD_SINGLE_HOLD,
+    TD_DOUBLE_HOLD,
+} td_state_t;
+
+typedef struct {
+    bool is_press_action;
+    td_state_t state;
+} td_tap_t;
+
+// Tap dance enums
+enum {
+    TD_NAV_MOUSE,
+    TD_SYM_FUNC
+};
+
+td_state_t cur_dance(tap_dance_state_t *state);
+
+// For the x tap dance. Put it here so it can be used in any keymap
+void b_finished(tap_dance_state_t *state, void *user_data);
+void b_reset(tap_dance_state_t *state, void *user_data);
+
+void d_finished(tap_dance_state_t *state, void *user_data);
+void d_reset(tap_dance_state_t *state, void *user_data);
+
 // Keymap
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   LR_MS,   LR_NAV,  MT_SPC,           LR_WM,   LR_SYM,  QK_REP
+                                   LR_MSE,  LR_NAV,  MT_SPC,           MT_ENT,  LR_SYM,  LR_FUN
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
@@ -93,24 +119,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
+    [SYM] = LAYOUT_split_3x5_3(
+        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_CIRC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
+        KC_0,    KC_4,    KC_5,    KC_6,    KC_AT,                              KC_PIPE, KC_EQL,  KC_LCBR, KC_LBRC, KC_LPRN,
+        KC_TILD, KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PERC, KC_MINS, KC_HASH, KC_AMPR,
+                                   KC_QUOT, KC_COLN, ____,             ____,    ____,    ____
+    ),
+
+
     // [SYM] = LAYOUT_split_3x5_3(
-    //     KC_GRV,  KC_1,    KC_2,    KC_3,    KC_CIRC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
-    //     KC_0,    KC_4,    KC_5,    KC_6,    TD_AT,                              KC_PIPE, KC_EQL,  TD_QUOT, KC_MINS, TD_COLN,
-    //     KC_TILD, KC_7,    KC_8,    KC_9,    KC_HASH,                            KC_AMPR, TD_CBR,  TD_BRC,  TD_PRN,  KC_PERC,
+    //     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_CIRC, KC_EXLM, KC_UNDS, KC_DLR,  KC_TILD,
+    //     KC_GRV,  KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_QUOT, KC_COLN,
+    //     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                               KC_PERC, KC_PLUS, KC_AMPR, KC_HASH, KC_BSLS,
     //                                ____,    ____,    ____,             ____,    ____,    ____
     // ),
 
-    [SYM] = LAYOUT_split_3x5_3(
-        XXXX,    KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, XXXX,
-        KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, ____,
-        XXXX,    KC_TILD, KC_PERC, KC_GRV,  XXXX,                               XXXX,    KC_PLUS, KC_HASH, KC_BSLS, XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
-    ),
+    // [SYM] = LAYOUT_split_3x5_3(
+    //     XXXX,    KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, XXXX,
+    //     KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, ____,
+    //     XXXX,    KC_TILD, KC_PERC, KC_GRV,  XXXX,                               XXXX,    KC_PLUS, KC_HASH, KC_BSLS, XXXX,
+    //                                ____,    ____,    ____,             ____,    ____,    ____
+    // ),
 
-    [NUM] = LAYOUT_split_3x5_3(
-        KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,                              KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,
-        KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-        XXXX,    XXXX,    XXXX,    KC_F11,  XXXX,                               XXXX,    KC_F12,  XXXX,    XXXX,    XXXX,
+    [FUNC] = LAYOUT_split_3x5_3(
+        XXXX,    KC_F1,   KC_F2,   KC_F3,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+        XXXX,    KC_F4,   KC_F5,   KC_F6,   XXXX,                               XXXX,    KC_F10,  KC_F11,  KC_F12,  XXXX,
+        XXXX,    KC_F7,   KC_F8,   KC_F9,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -396,6 +430,68 @@ void matrix_scan_user(void) {
   }
 }
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, NAV, SYM, NUM);
+// Tap Dance (Left to right button A -> F)
+td_state_t cur_dance(tap_dance_state_t *state) {
+    if (state->count == 1) {
+        // if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
+        if (state->pressed) return TD_SINGLE_HOLD;
+        else return TD_NONE;
+    } else if (state->count == 2) {
+        // if (state->interrupted || !state->pressed) return TD_DOUBLE_TAP;
+        if (state->pressed) return TD_DOUBLE_HOLD;
+        else return TD_NONE;
+    } else return TD_UNKNOWN;
 }
+
+// B - Left Thumb
+static td_tap_t btap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void b_finished(tap_dance_state_t *state, void *user_data) {
+    btap_state.state = cur_dance(state);
+    switch (btap_state.state) {
+        case TD_SINGLE_HOLD: layer_on(NAV); break;
+        case TD_DOUBLE_HOLD: layer_on(MOUSE);  break;
+        default: break;
+    }
+}
+
+void b_reset(tap_dance_state_t *state, void *user_data) {
+    switch (btap_state.state) {
+        case TD_SINGLE_HOLD: layer_off(NAV); break;
+        case TD_DOUBLE_HOLD: layer_off(MOUSE); break;
+        default: break;
+    }
+    btap_state.state = TD_NONE;
+}
+
+// D - Right Thumb
+static td_tap_t dtap_state = {
+    .is_press_action = true,
+    .state = TD_NONE
+};
+
+void d_finished(tap_dance_state_t *state, void *user_data) {
+    dtap_state.state = cur_dance(state);
+    switch (dtap_state.state) {
+        case TD_SINGLE_HOLD: layer_on(SYM); break;
+        case TD_DOUBLE_HOLD: layer_on(FUNC);  break;
+        default: break;
+    }
+}
+
+void d_reset(tap_dance_state_t *state, void *user_data) {
+    switch (dtap_state.state) {
+        case TD_SINGLE_HOLD: layer_off(SYM); break;
+        case TD_DOUBLE_HOLD: layer_off(FUNC); break;
+        default: break;
+    }
+    dtap_state.state = TD_NONE;
+}
+
+tap_dance_action_t tap_dance_actions[] = {
+    [TD_NAV_MOUSE] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, b_finished, b_reset),
+    [TD_SYM_FUNC] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, d_finished, d_reset)
+};
