@@ -130,19 +130,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
- 
+
     [SYM] = LAYOUT_split_3x5_3(
-        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_PERC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
-        KC_QUOT, KC_4,    KC_5,    KC_6,    KC_AT,                              KC_AMPR, KC_EQL,  KC_MINS, KC_COLN, ____,
+        KC_GRV,  KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_LCBR, KC_LPRN, KC_LBRC, KC_BSLS,
+        KC_QUOT, KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_COLN, ____,
         KC_TILD, KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PIPE, ____,    ____,    ____,
-                                   KC_ASTR, ____,    ____,             ____,    ____,    ____
+                                   ____,    ____,    ____,             ____,    ____,    ____
     ),
 
     // [SYM] = LAYOUT_split_3x5_3(
-    //     XXXX,    KC_ASTR, KC_CIRC, KC_EXLM, XXXX,                               XXXX,    KC_UNDS, KC_DLR,  KC_AMPR, XXXX,
-    //     KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, ____,
-    //     XXXX,    KC_TILD, KC_PERC, KC_GRV,  XXXX,                               XXXX,    KC_PLUS, KC_HASH, KC_BSLS, XXXX,
-    //                                ____,    ____,    ____,             ____,    ____,    ____
+    //   KC_GRV,  KC_ASTR, KC_CIRC, KC_AMPR, KC_PERC,                            KC_HASH, KC_EXLM, KC_DLR,  KC_AMPR, KC_BSLS,
+    //   KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PLUS, KC_EQL,  KC_MINS, KC_COLN, ____,
+    //   KC_TILD, KC_LPRN, KC_LBRC, KC_LCBR, XXXX,                               XXXX,    KC_PIPE, ____,    ____,    ____,
+    //                              ____,    ____,    ____,             ____,    ____,    ____
     // ),
 
     [FUNC] = LAYOUT_split_3x5_3(
@@ -233,21 +233,21 @@ uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
         case AUTO_SHIFT_ALPHA:
             return get_generic_autoshift_timeout();
         default:
-            return get_generic_autoshift_timeout() + 40;
+            return get_generic_autoshift_timeout() + 20;
     }
 }
 
 bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
     switch(keycode) {
         case KC_COLN:
-        case KC_2:
-        case KC_3:
-        case KC_4:
-        case KC_5:
-        case KC_6:
-        case KC_7:
-        case KC_8:
-        case KC_9:
+        // case KC_2:
+        // case KC_3:
+        // case KC_4:
+        // case KC_5:
+        // case KC_6:
+        // case KC_7:
+        // case KC_8:
+        // case KC_9:
             return true;
         default:
             return false;
@@ -256,75 +256,65 @@ bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
 
 void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
     switch(keycode) {
-        case KC_COLN:
-            register_code16((!shifted) ? KC_COLN : KC_SCLN);
-            break;
-        case KC_2:
-            register_code16((!shifted) ? KC_2 : KC_CIRC);
-            break;
-        case KC_3:
-            register_code16((!shifted) ? KC_3 : KC_HASH);
-            break;
-        case KC_4:
-            register_code16((!shifted) ? KC_4 : KC_LBRC);
-            break;
-        case KC_5:
-            register_code16((!shifted) ? KC_5 : KC_LPRN);
-            break;
-        case KC_6:
-            register_code16((!shifted) ? KC_6 : KC_LCBR);
-            break;
-        case KC_7:
-            register_code16((!shifted) ? KC_7 : KC_RBRC);
-            break;
-        case KC_8:
-            register_code16((!shifted) ? KC_8 : KC_RPRN);
-          break;
-        case KC_9:
-            register_code16((!shifted) ? KC_9 : KC_RCBR);
-            break;
+        // case KC_2:
+        //     register_code16((!shifted) ? KC_2 : KC_CIRC);
+        //     break;
+        // case KC_3:
+        //     register_code16((!shifted) ? KC_3 : KC_HASH);
+        //     break;
+        // case KC_4:
+        //     register_code16((!shifted) ? KC_4 : KC_LBRC);
+        //     break;
+        // case KC_5:
+        //     register_code16((!shifted) ? KC_5 : KC_LPRN);
+        //     break;
+        // case KC_6:
+        //     register_code16((!shifted) ? KC_6 : KC_LCBR);
+        //     break;
+        // case KC_7:
+        //     register_code16((!shifted) ? KC_7 : KC_RBRC);
+        //     break;
+        // case KC_8:
+        //     register_code16((!shifted) ? KC_8 : KC_RPRN);
+        //   break;
+        // case KC_9:
+        //     register_code16((!shifted) ? KC_9 : KC_RCBR);
+        //     break;
         default:
             if (shifted) {
                 add_weak_mods(MOD_BIT(KC_LSFT));
             }
-            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
             register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
     }
 }
 
 void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
     switch(keycode) {
-        case KC_COLN:
-            unregister_code16((!shifted) ? KC_COLN : KC_SCLN);
-            break;
-        case KC_2:
-            unregister_code16((!shifted) ? KC_2 : KC_CIRC);
-            break;
-        case KC_3:
-            unregister_code16((!shifted) ? KC_3 : KC_HASH);
-            break;
-        case KC_4:
-            unregister_code16((!shifted) ? KC_4 : KC_LBRC);
-            break;
-        case KC_5:
-            unregister_code16((!shifted) ? KC_5 : KC_LPRN);
-            break;
-        case KC_6:
-            unregister_code16((!shifted) ? KC_6 : KC_LCBR);
-            break;
-        case KC_7:
-            unregister_code16((!shifted) ? KC_7 : KC_RBRC);
-            break;
-        case KC_8:
-            unregister_code16((!shifted) ? KC_8 : KC_RPRN);
-            break;
-        case KC_9:
-            unregister_code16((!shifted) ? KC_9 : KC_RCBR);
-            break;
+        // case KC_2:
+        //     unregister_code16((!shifted) ? KC_2 : KC_CIRC);
+        //     break;
+        // case KC_3:
+        //     unregister_code16((!shifted) ? KC_3 : KC_HASH);
+        //     break;
+        // case KC_4:
+        //     unregister_code16((!shifted) ? KC_4 : KC_LBRC);
+        //     break;
+        // case KC_5:
+        //     unregister_code16((!shifted) ? KC_5 : KC_LPRN);
+        //     break;
+        // case KC_6:
+        //     unregister_code16((!shifted) ? KC_6 : KC_LCBR);
+        //     break;
+        // case KC_7:
+        //     unregister_code16((!shifted) ? KC_7 : KC_RBRC);
+        //     break;
+        // case KC_8:
+        //     unregister_code16((!shifted) ? KC_8 : KC_RPRN);
+        //     break;
+        // case KC_9:
+        //     unregister_code16((!shifted) ? KC_9 : KC_RCBR);
+        //     break;
         default:
-            // & 0xFF gets the Tap key for Tap Holds, required when using Retro Shift
-            // The IS_RETRO check isn't really necessary here, always using
-            // keycode & 0xFF would be fine.
             unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
     }
 }
