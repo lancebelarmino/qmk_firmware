@@ -4,20 +4,12 @@
 
 #define LR_NAV TD(TD_WM_NAV)
 #define LR_SYM TD(TD_SYM_FUNC)
-#define LR_FUN MO(FUNC)
-#define LR_WINM LT(WINM, KC_SPC)
+#define LR_NUM MO(NUM)
 
-#define MT_ENT MT(MOD_LALT | MOD_LGUI, KC_ENT)
-#define MT_ENT2 MT(MOD_LSFT, KC_ENT)
+#define MT_SPC MT(MOD_LSFT, KC_SPC)
+#define MT_ENT MT(MOD_LCTL | MOD_LALT | MOD_LGUI, KC_ENT)
 
-#define MR_ST G(KC_TAB)
-#define MR_S G(KC_S)
-#define MR_R G(KC_R)
 #define MR_SA G(KC_A)
-#define MR_X G(KC_X)
-#define MR_C G(KC_C)
-#define MR_V G(KC_V)
-#define MR_Q G(KC_Q)
 #define MR_W G(KC_W)
 #define MR_Z G(KC_Z)
 #define MR_RZ LSG(KC_Z)
@@ -31,11 +23,10 @@
 
 enum layers {
     BASE,
-    WINM,
     NAV,
     SYM,
-    FUNC,
     MOUSE,
+    NUM
 };
 
 enum keycodes {
@@ -114,42 +105,28 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
         KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   QK_REP,  LR_NAV,  LR_WINM,          MT_ENT,  LR_SYM,  LR_FUN
-    ),
-
-    [WINM] = LAYOUT_split_3x5_3(
-        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
-        KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_EQL,
-        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   ____,    ____,    ____,             MT_ENT2, KC_SCLN, KC_MINS
+                                   QK_REP, LR_NAV,  MT_SPC,           MT_ENT,   LR_SYM,  LR_NUM
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
         XXXX,    MR_BT,   MR_PRT,  MR_NXT,  MR_W,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
         OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_AT,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
         MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
+                                   ____,    ____,    ____,            ____,     ____,    ____
     ),
 
     [SYM] = LAYOUT_split_3x5_3(
-        KC_GRV,  KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_LCBR, KC_LPRN, KC_LBRC, KC_BSLS,
-        KC_QUOT, KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_EQL,  KC_MINS, KC_COLN, ____,
-        KC_TILD, KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_PIPE, ____,    ____,    ____,
+        KC_GRV,  KC_ASTR, KC_CIRC, KC_AMPR, KC_PERC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
+        KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, ____,
+        KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_HASH, KC_AMPR, KC_SCLN, KC_TILD,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
-    // [SYM] = LAYOUT_split_3x5_3(
-    //   KC_GRV,  KC_ASTR, KC_CIRC, KC_AMPR, KC_PERC,                            KC_HASH, KC_EXLM, KC_DLR,  KC_AMPR, KC_BSLS,
-    //   KC_QUOT, KC_LPRN, KC_LBRC, KC_LCBR, KC_AT,                              KC_PLUS, KC_EQL,  KC_MINS, KC_COLN, ____,
-    //   KC_TILD, KC_LPRN, KC_LBRC, KC_LCBR, XXXX,                               XXXX,    KC_PIPE, ____,    ____,    ____,
-    //                              ____,    ____,    ____,             ____,    ____,    ____
-    // ),
-
-    [FUNC] = LAYOUT_split_3x5_3(
-        XXXX,    KC_F1,   KC_F2,   KC_F3,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-        XXXX,    KC_F4,   KC_F5,   KC_F6,   XXXX,                               XXXX,    KC_F10,  KC_F11,  KC_F12,  XXXX,
-        XXXX,    KC_F7,   KC_F8,   KC_F9,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-                                   ____,    ____,    ____,             ____,    ____,    ____
+    [NUM] = LAYOUT_split_3x5_3(
+        XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,
+        XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,
+        XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,
+                                   ____,    KC_0,    ____,             ____,    ____,    ____
     ),
 
     [MOUSE] = LAYOUT_split_3x5_3(
@@ -183,10 +160,10 @@ const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 combo_t key_combos[] = {
     [CO_WE] = COMBO(we_combo, MR_Z),
     [CO_ER] = COMBO(er_combo, MR_RZ),
-    [CO_WR] = COMBO(wr_combo, KC_CAPS),
-    [CO_SD] = COMBO(sd_combo, KC_LGUI),
-    [CO_DF] = COMBO(df_combo, KC_SPC),
-    [CO_SF] = COMBO(sf_combo, KC_LOPT),
+    [CO_WR] = COMBO(wr_combo, MR_AT),
+    [CO_SD] = COMBO(sd_combo, KC_TAB),
+    [CO_DF] = COMBO(df_combo, MR_AT),
+    // [CO_SF] = COMBO(sf_combo, MR_AT),
     [CO_XC] = COMBO(xc_combo, KC_ENT),
     [CO_CV] = COMBO(cv_combo, KC_BSPC),
 
@@ -228,96 +205,96 @@ bool is_oneshot_ignored_key(uint16_t keycode) {
 }
 
 // Auto Shift
-uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
-    switch(keycode) {
-        case AUTO_SHIFT_ALPHA:
-            return get_generic_autoshift_timeout();
-        default:
-            return get_generic_autoshift_timeout() + 20;
-    }
-}
+// uint16_t get_autoshift_timeout(uint16_t keycode, keyrecord_t *record) {
+//     switch(keycode) {
+//         case AUTO_SHIFT_ALPHA:
+//             return get_generic_autoshift_timeout();
+//         default:
+//             return get_generic_autoshift_timeout() + 20;
+//     }
+// }
 
-bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
-    switch(keycode) {
-        case KC_COLN:
-        // case KC_2:
-        // case KC_3:
-        // case KC_4:
-        // case KC_5:
-        // case KC_6:
-        // case KC_7:
-        // case KC_8:
-        // case KC_9:
-            return true;
-        default:
-            return false;
-    }
-}
+// bool get_custom_auto_shifted_key(uint16_t keycode, keyrecord_t *record) {
+//     switch(keycode) {
+//         case KC_COLN:
+//         // case KC_2:
+//         // case KC_3:
+//         // case KC_4:
+//         // case KC_5:
+//         // case KC_6:
+//         // case KC_7:
+//         // case KC_8:
+//         // case KC_9:
+//             return true;
+//         default:
+//             return false;
+//     }
+// }
 
-void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        // case KC_2:
-        //     register_code16((!shifted) ? KC_2 : KC_CIRC);
-        //     break;
-        // case KC_3:
-        //     register_code16((!shifted) ? KC_3 : KC_HASH);
-        //     break;
-        // case KC_4:
-        //     register_code16((!shifted) ? KC_4 : KC_LBRC);
-        //     break;
-        // case KC_5:
-        //     register_code16((!shifted) ? KC_5 : KC_LPRN);
-        //     break;
-        // case KC_6:
-        //     register_code16((!shifted) ? KC_6 : KC_LCBR);
-        //     break;
-        // case KC_7:
-        //     register_code16((!shifted) ? KC_7 : KC_RBRC);
-        //     break;
-        // case KC_8:
-        //     register_code16((!shifted) ? KC_8 : KC_RPRN);
-        //   break;
-        // case KC_9:
-        //     register_code16((!shifted) ? KC_9 : KC_RCBR);
-        //     break;
-        default:
-            if (shifted) {
-                add_weak_mods(MOD_BIT(KC_LSFT));
-            }
-            register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
-    }
-}
+// void autoshift_press_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+//     switch(keycode) {
+//         // case KC_2:
+//         //     register_code16((!shifted) ? KC_2 : KC_CIRC);
+//         //     break;
+//         // case KC_3:
+//         //     register_code16((!shifted) ? KC_3 : KC_HASH);
+//         //     break;
+//         // case KC_4:
+//         //     register_code16((!shifted) ? KC_4 : KC_LBRC);
+//         //     break;
+//         // case KC_5:
+//         //     register_code16((!shifted) ? KC_5 : KC_LPRN);
+//         //     break;
+//         // case KC_6:
+//         //     register_code16((!shifted) ? KC_6 : KC_LCBR);
+//         //     break;
+//         // case KC_7:
+//         //     register_code16((!shifted) ? KC_7 : KC_RBRC);
+//         //     break;
+//         // case KC_8:
+//         //     register_code16((!shifted) ? KC_8 : KC_RPRN);
+//         //   break;
+//         // case KC_9:
+//         //     register_code16((!shifted) ? KC_9 : KC_RCBR);
+//         //     break;
+//         default:
+//             if (shifted) {
+//                 add_weak_mods(MOD_BIT(KC_LSFT));
+//             }
+//             register_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+//     }
+// }
 
-void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
-    switch(keycode) {
-        // case KC_2:
-        //     unregister_code16((!shifted) ? KC_2 : KC_CIRC);
-        //     break;
-        // case KC_3:
-        //     unregister_code16((!shifted) ? KC_3 : KC_HASH);
-        //     break;
-        // case KC_4:
-        //     unregister_code16((!shifted) ? KC_4 : KC_LBRC);
-        //     break;
-        // case KC_5:
-        //     unregister_code16((!shifted) ? KC_5 : KC_LPRN);
-        //     break;
-        // case KC_6:
-        //     unregister_code16((!shifted) ? KC_6 : KC_LCBR);
-        //     break;
-        // case KC_7:
-        //     unregister_code16((!shifted) ? KC_7 : KC_RBRC);
-        //     break;
-        // case KC_8:
-        //     unregister_code16((!shifted) ? KC_8 : KC_RPRN);
-        //     break;
-        // case KC_9:
-        //     unregister_code16((!shifted) ? KC_9 : KC_RCBR);
-        //     break;
-        default:
-            unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
-    }
-}
+// void autoshift_release_user(uint16_t keycode, bool shifted, keyrecord_t *record) {
+//     switch(keycode) {
+//         // case KC_2:
+//         //     unregister_code16((!shifted) ? KC_2 : KC_CIRC);
+//         //     break;
+//         // case KC_3:
+//         //     unregister_code16((!shifted) ? KC_3 : KC_HASH);
+//         //     break;
+//         // case KC_4:
+//         //     unregister_code16((!shifted) ? KC_4 : KC_LBRC);
+//         //     break;
+//         // case KC_5:
+//         //     unregister_code16((!shifted) ? KC_5 : KC_LPRN);
+//         //     break;
+//         // case KC_6:
+//         //     unregister_code16((!shifted) ? KC_6 : KC_LCBR);
+//         //     break;
+//         // case KC_7:
+//         //     unregister_code16((!shifted) ? KC_7 : KC_RBRC);
+//         //     break;
+//         // case KC_8:
+//         //     unregister_code16((!shifted) ? KC_8 : KC_RPRN);
+//         //     break;
+//         // case KC_9:
+//         //     unregister_code16((!shifted) ? KC_9 : KC_RCBR);
+//         //     break;
+//         default:
+//             unregister_code16((IS_RETRO(keycode)) ? keycode & 0xFF : keycode);
+//     }
+// }
 
 // Macros
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -454,21 +431,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
           };
           break;
-      case LR_WINM:
-              if (record->event.pressed) {
-                  if (record->tap.count == 0) {
-                      register_code(KC_LCTL);
-                      register_code(KC_LALT);
-                      register_code(KC_LGUI);
-                  }
-              } else {
-                  if (get_mods()) {
-                      unregister_code(KC_LCTL);
-                      unregister_code(KC_LALT);
-                      unregister_code(KC_LGUI);
-                  }
-              };
-          break;
     }
 
     return true;
@@ -533,12 +495,7 @@ void b_finished(tap_dance_state_t *state, void *user_data) {
                 KC_CLEAR, &custom_record
             );
           } else {
-            if (layer_state_is(SYM)) {
-                tap_code16(KC_0);
-            } else {
-                register_code(KC_ESC);
-            }
-            
+            register_code(KC_ESC);
           }
           break;
         }
@@ -600,32 +557,18 @@ void d_finished(tap_dance_state_t *state, void *user_data) {
                 KC_CLEAR, &custom_record
             );
           } else {
-            register_code(KC_TAB);
+            tap_code(KC_CAPS);
           }
           break;
         }
         case TD_SINGLE_HOLD: layer_on(SYM);  break;
-        case TD_DOUBLE_TAP: {
-          register_code(KC_LSFT);
-          register_code(KC_TAB); break;
-        }
         default: break;
     }
 }
 
 void d_reset(tap_dance_state_t *state, void *user_data) {
     switch (dtap_state.state) {
-        case TD_SINGLE_TAP: {
-            if (!get_mods()) {
-              unregister_code(KC_TAB);
-            }
-          break;
-        }
         case TD_SINGLE_HOLD: layer_off(SYM); break;
-        case TD_DOUBLE_TAP: {
-          unregister_code(KC_LSFT);
-          unregister_code(KC_TAB); break;
-        }
         default: break;
     }
     dtap_state.state = TD_NONE;
