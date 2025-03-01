@@ -2,14 +2,15 @@
 
   #include "oneshot.h"
 
-  #define LR_NAV TD(TD_WM_NAV)
-  #define LR_SYM MO(SYM)
-  #define LR_NUM MO(NUM)
-  #define LR_MOUS TT(MOUSE)
-  #define LR_FUNC MO(FUNC)
+  #define LY_NAV TD(TD_WM_NAV)
+  #define LY_SYM MO(SYM)
+  #define LY_NUM LT(NUM, KC_CAPS)
+  #define LY_DES TG(DES)
 
-  #define MT_SPC MT(MOD_LCTL | MOD_LALT | MOD_LGUI, KC_SPC)
-  #define MT_ENT MT(MOD_LSFT, KC_ENT)
+  #define MT_SPC MT(MOD_LALT, KC_SPC)
+  #define MT_ENT MT(MOD_LCTL, KC_ENT)
+  #define MT_Z MT(MOD_LSFT, KC_Z)
+  #define MT_SLSH MT(MOD_LSFT, KC_SLSH)
 
   #define MR_AT G(KC_TAB)
   #define MR_ST C(KC_TAB)
@@ -20,6 +21,7 @@
   #define MR_WH_R S(KC_WH_D)
   #define MR_VU C(KC_U)
   #define MR_VD C(KC_D)
+  #define MR_SW G(KC_GRV)
 
   #define XXXX KC_NO
   #define ____ KC_TRNS
@@ -31,6 +33,7 @@
       NUM,
       FUNC,
       MOUSE,
+      DES
   };
 
   enum keycodes {
@@ -39,17 +42,13 @@
       MR_RT,
       MR_NXT,
       MR_PRT,
-      MR_SW,
       MR_ZI,
       MR_ZO,
       MR_SC,
       MR_HAT,
       MR_AS,
       MR_BT,
-
-      // Custom Shifted Values
-      CM_CAG,
-      CM_HYPR,
+      MR_CM,
 
       // One Shot Keys
       OS_SHFT,
@@ -110,20 +109,13 @@
       [BASE] = LAYOUT_split_3x5_3(
           KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
           KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
-          KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                     LR_MOUS, LR_NAV,  MT_SPC,          MT_ENT,   LR_SYM,  LR_FUNC
-      ),
-
-      [MOUSE] = LAYOUT_split_3x5_3(
-          MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                                XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
-          KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                                XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
-          MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
-                                    ____,    ____,    ____,             ____,    ____,    ____
+          MT_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  MT_SLSH,
+                                     LY_NUM,  LY_NAV,  MT_SPC,          MT_ENT,   LY_SYM,  LY_DES
       ),
 
       [NAV] = LAYOUT_split_3x5_3(
           MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
-          OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+          OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_HAT,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
           MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                      ____,    ____,    ____,            ____,     ____,    ____
       ),
@@ -135,6 +127,13 @@
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
 
+      [MOUSE] = LAYOUT_split_3x5_3(
+          MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                                XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
+          KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, MR_HAT,                              XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
+          MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+                                     ____,    ____,    ____,             ____,     ____,    ____
+      ),
+
       [FUNC] = LAYOUT_split_3x5_3(
           KC_F1,   KC_F2,   KC_F3,   KC_F4,   XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
           KC_F5,   KC_F6,   KC_F7,   KC_F8,   XXXX,                               XXXX,    KC_RCMD, KC_RSFT, KC_RALT, KC_RCTL,
@@ -144,22 +143,22 @@
 
       [NUM] = LAYOUT_split_3x5_3(
           XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-          KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_RCMD, KC_RSFT, CM_CAG,  CM_HYPR,
+          KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_RCMD, KC_RSFT, KC_RALT, KC_RCTL,
           XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
 
-      // [NUM] = LAYOUT_split_3x5_3(
-      //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_1,    KC_2,    KC_3,    XXXX,
-      //     CM_HYPR, CM_CAG,  KC_LSFT, KC_LCMD, XXXX,                               XXXX,    KC_4,    KC_5,    KC_6,    ____,
-      //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_7,    KC_8,    KC_9,    XXXX,
-      //                               ____,    ____,    ____,             ____,    KC_0,    ____
-      // ),
+      [DES] = LAYOUT_split_3x5_3(
+          ____,    ____,    ____,    ____,    ____,                               ____,    ____,    ____,    ____,    ____,
+          ____,    ____,    ____,    ____,    ____,                               ____,    ____,    ____,    ____,    ____,
+          ____,    ____,    ____,    ____,    ____,                               ____,    ____,    ____,    ____,    ____,
+                                     ____,    ____,    KC_SPC,           ____,    ____,    ____
+      ),
   };
 
   bool is_alt_tab_active = false;
   bool is_ctl_tab_active = false;
-  uint16_t alt_tab_timer = 0;  
+  uint16_t alt_tab_timer = 0; 
 
   // Combos
   const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
@@ -180,10 +179,10 @@
   combo_t key_combos[] = {
       [CO_WE] = COMBO(we_combo, MR_Z),
       [CO_ER] = COMBO(er_combo, MR_RZ),
-      [CO_WR] = COMBO(wr_combo, MR_HAT),
+      [CO_WR] = COMBO(wr_combo, MR_CM),
       [CO_SD] = COMBO(sd_combo, KC_TAB),
-      [CO_DF] = COMBO(df_combo, KC_CAPS),
-      [CO_SF] = COMBO(sf_combo, MR_AT),
+      [CO_DF] = COMBO(df_combo, MR_AT),
+      [CO_SF] = COMBO(sf_combo, MR_SW),
       [CO_XC] = COMBO(xc_combo, KC_ENT),
       [CO_CV] = COMBO(cv_combo, KC_BSPC),
 
@@ -212,8 +211,8 @@
 
   bool is_oneshot_ignored_key(uint16_t keycode) {
       switch (keycode) {
-      case LR_NAV:
-      case LR_SYM:
+      case LY_NAV:
+      case LY_SYM:
       case OS_SHFT:
       case OS_CTRL:
       case OS_ALT:
@@ -255,6 +254,7 @@
           keycode, record
       );
 
+      
       switch (keycode) {
         case MR_AS:
             // Switch Application
@@ -288,16 +288,6 @@
               unregister_code(KC_LALT);
               unregister_code(KC_LGUI);
               unregister_code(KC_LEFT);
-            }
-            break;
-        case MR_SW:
-            // Switch Window
-            if (record->event.pressed) {
-              register_code(KC_LGUI);
-              register_code(KC_GRV);
-            } else {
-              unregister_code(KC_LGUI);
-              unregister_code(KC_GRV);
             }
             break;
         case MR_ZI:
@@ -363,32 +353,17 @@
                 alt_tab_timer = timer_read();
             }
             break;
-        case CM_CAG:
+        case MR_CM:
             if (record->event.pressed) {
-                register_code(KC_LCTL);
-                register_code(KC_LALT);
                 register_code(KC_LGUI);
+                register_code(KC_LALT);
+                register_code(KC_C);
             } else {
-                unregister_code(KC_LCTL);
-                unregister_code(KC_LALT);
                 unregister_code(KC_LGUI);
+                unregister_code(KC_LALT);
+                unregister_code(KC_C);
             }
             break;
-        
-        case CM_HYPR:
-            if (record->event.pressed) {
-                register_code(KC_LCTL);
-                register_code(KC_LALT);
-                register_code(KC_LSFT);
-                register_code(KC_LGUI);
-            } else {
-                unregister_code(KC_LCTL);
-                unregister_code(KC_LALT);
-                unregister_code(KC_LSFT);
-                unregister_code(KC_LGUI);
-            }
-            break;
-            
       }
 
       return true;
@@ -537,7 +512,7 @@
   };
 
   layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, NAV, SYM, NUM);
+    return update_tri_layer_state(state, NAV, SYM, MOUSE);
   }
 
   // Display
