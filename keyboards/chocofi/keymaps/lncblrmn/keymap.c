@@ -48,7 +48,7 @@
       MR_BT,
 
       // Custom Shifted Values
-      CM_MEH,
+      CM_CAG,
       CM_HYPR,
 
       // One Shot Keys
@@ -111,22 +111,15 @@
           KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
           KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_BSPC,
           KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                     LR_NUM,  LR_NAV,  MT_SPC,          MT_ENT,   LR_SYM,  LR_FUNC
+                                     LR_MOUS, LR_NAV,  MT_SPC,          MT_ENT,   LR_SYM,  LR_FUNC
       ),
 
-      [NUM] = LAYOUT_split_3x5_3(
-        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_1,    KC_2,    KC_3,    XXXX,
-        CM_HYPR, CM_MEH,  KC_LSFT, KC_LCMD, XXXX,                               XXXX,    KC_4,    KC_5,    KC_6,    ____,
-        XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_7,    KC_8,    KC_9,    XXXX,
-                                   ____,    ____,    ____,             ____,    KC_0,    ____
+      [MOUSE] = LAYOUT_split_3x5_3(
+          MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                                XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
+          KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                                XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
+          MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+                                    ____,    ____,    ____,             ____,    ____,    ____
       ),
-
-      // [NUM] = LAYOUT_split_3x5_3(
-      //   XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-      //   KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_RCMD, KC_RSFT, CM_MEH,  CM_HYPR,
-      //   XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-      //                              ____,    ____,    ____,             ____,    ____,    ____
-      // ),
 
       [NAV] = LAYOUT_split_3x5_3(
           MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
@@ -149,12 +142,19 @@
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
 
-      [MOUSE] = LAYOUT_split_3x5_3(
-          MR_BT,   MR_ST,   MR_PRT,  MR_NXT,  MR_W,                                XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
-          KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                                XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
-          MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+      [NUM] = LAYOUT_split_3x5_3(
+          XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+          KC_0,    KC_4,    KC_5,    KC_6,    XXXX,                               XXXX,    KC_RCMD, KC_RSFT, CM_CAG,  CM_HYPR,
+          XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
+
+      // [NUM] = LAYOUT_split_3x5_3(
+      //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_1,    KC_2,    KC_3,    XXXX,
+      //     CM_HYPR, CM_CAG,  KC_LSFT, KC_LCMD, XXXX,                               XXXX,    KC_4,    KC_5,    KC_6,    ____,
+      //     XXXX,    XXXX,    XXXX,    XXXX,    XXXX,                               XXXX,    KC_7,    KC_8,    KC_9,    XXXX,
+      //                               ____,    ____,    ____,             ____,    KC_0,    ____
+      // ),
   };
 
   bool is_alt_tab_active = false;
@@ -363,15 +363,15 @@
                 alt_tab_timer = timer_read();
             }
             break;
-        case CM_MEH:
+        case CM_CAG:
             if (record->event.pressed) {
                 register_code(KC_LCTL);
                 register_code(KC_LALT);
-                register_code(KC_LSFT);
+                register_code(KC_LGUI);
             } else {
                 unregister_code(KC_LCTL);
                 unregister_code(KC_LALT);
-                unregister_code(KC_LSFT);
+                unregister_code(KC_LGUI);
             }
             break;
         
@@ -537,7 +537,7 @@
   };
 
   layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, NAV, SYM, MOUSE);
+    return update_tri_layer_state(state, NAV, SYM, NUM);
   }
 
   // Display
