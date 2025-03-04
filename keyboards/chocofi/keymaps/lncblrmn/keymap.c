@@ -2,8 +2,8 @@
 
   #include "oneshot.h"
 
-  #define LY_NAV LT(NAV, KC_ESC)
-  #define LY_SYM LT(SYM, KC_TAB)
+  #define LY_NAV MO(NAV)
+  #define LY_SYM MO(SYM)
   #define LY_NUM LT(NUM, KC_ENT)
   #define LY_FUNC LT(FUNC, KC_CAPS)
 
@@ -23,6 +23,8 @@
   #define MR_X G(KC_X)
   #define MR_C G(KC_C)
   #define MR_V G(KC_V)
+  #define MR_CT G(KC_W)
+  #define MR_RT LSG(KC_W)
 
   #define XXXX KC_NO
   #define ____ KC_TRNS
@@ -73,36 +75,36 @@
       ),
 
       [NAV] = LAYOUT_split_3x5_3(
-          XXXX,    XXXX,    KC_ENT,  KC_BSPC, XXXX,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
+          MR_RT,   MR_CT,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
           OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  XXXX,                               KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_BSPC,
           MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                      ____,    ____,    ____,            ____,     ____,    ____
       ),
 
       [SYM] = LAYOUT_split_3x5_3(
-          KC_GRV,  KC_ASTR, KC_CIRC, KC_AMPR, KC_PERC,                            KC_PLUS, KC_EXLM, KC_UNDS, KC_DLR,  KC_BSLS,
-          KC_QUOT, KC_LBRC, KC_LPRN, KC_LCBR, KC_AT,                              KC_PIPE, KC_EQL,  KC_MINS, KC_COLN, KC_BSPC,
-          KC_DQT,  KC_RBRC, KC_RPRN, KC_RCBR, XXXX,                               XXXX,    KC_HASH, KC_AMPR, KC_SCLN, KC_TILD,
+          ____,    KC_QUES, KC_PIPE, KC_AMPR, KC_TILD,                            KC_PLUS, KC_UNDS, KC_LCBR, KC_RCBR, ____,
+          KC_MINS, KC_CIRC, KC_DLR,  KC_QUOT, KC_AT,                              KC_EXLM, KC_EQL,  KC_LPRN, KC_RPRN, KC_COLN,
+          KC_BSLS, KC_HASH, KC_ASTR, KC_DQT,  ____,                               ____,    KC_GRV, KC_RBRC, KC_LBRC, KC_SCLN,
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
 
       [MOUSE] = LAYOUT_split_3x5_3(
-          XXXX,    XXXX,    KC_ENT,  KC_BSPC, XXXX,                               XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
+          XXXX,    XXXX,    MR_PRT,  MR_NXT,  XXXX,                               XXXX,    MR_ZO,   KC_MS_U, MR_ZI,   XXXX,
           KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                               XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
           MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
 
       [NUM] = LAYOUT_split_3x5_3(
-          XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
+          XXXX,    KC_1,    KC_2,    KC_3,    XXXX,                               XXXX,    KC_PLUS, KC_MINS, KC_ASTR, XXXX,
           XXXX,    KC_4,    KC_5,    KC_6,    XXXX,                               ____,    ____,    ____,    ____,    ____,
-          XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    XXXX,    XXXX,    XXXX,    ____,
-                                    ____,    KC_0,    ____,             ____,    ____,    ____
+          XXXX,    KC_7,    KC_8,    KC_9,    XXXX,                               XXXX,    XXXX,    KC_EQL,  XXXX,    XXXX,
+                                     ____,    KC_0,    ____,             ____,    ____,    ____
       ),
 
       [FUNC] = LAYOUT_split_3x5_3(
           XXXX,    KC_F1,   KC_F2,   KC_F3,   KC_F4,                              XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
-          XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_BSPC,
+          XXXX,    KC_F5,   KC_F6,   KC_F7,   KC_F8,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
           XXXX,    KC_F9,   KC_F10,  KC_F11,  KC_F12,                             XXXX,    XXXX,    XXXX,    XXXX,    XXXX,
                                      ____,    ____,    ____,             ____,    ____,    ____
       ),
@@ -112,14 +114,20 @@
   const uint16_t PROGMEM we_combo[] = {KC_W, KC_E, COMBO_END};
   const uint16_t PROGMEM er_combo[] = {KC_E, KC_R, COMBO_END};
   const uint16_t PROGMEM wr_combo[] = {KC_W, KC_R, COMBO_END};
+  const uint16_t PROGMEM sd_combo[] = {MT_S, MT_D, COMBO_END};
+  const uint16_t PROGMEM df_combo[] = {MT_D, MT_F, COMBO_END};
+  const uint16_t PROGMEM sf_combo[] = {MT_S, MT_F, COMBO_END};
   const uint16_t PROGMEM xc_combo[] = {KC_X, KC_C, COMBO_END};
   const uint16_t PROGMEM cv_combo[] = {KC_C, KC_V, COMBO_END};
   const uint16_t PROGMEM xv_combo[] = {KC_X, KC_V, COMBO_END};
 
   combo_t key_combos[] = {
-      [CO_WE] = COMBO(we_combo, MR_PRT),
-      [CO_ER] = COMBO(er_combo, MR_NXT),
-      [CO_WR] = COMBO(wr_combo, MR_SW),
+      [CO_WE] = COMBO(we_combo, KC_ENT),
+      [CO_ER] = COMBO(er_combo, KC_BSPC),
+      // [CO_WR] = COMBO(wr_combo, MR_SW),
+      [CO_SD] = COMBO(sd_combo, KC_ESC),
+      [CO_DF] = COMBO(df_combo, KC_TAB),
+      [CO_SF] = COMBO(sf_combo, MR_SW),
       [CO_XC] = COMBO(xc_combo, KC_F3),
       [CO_CV] = COMBO(cv_combo, KC_F12),
       [CO_XV] = COMBO(xv_combo, MR_SC),
@@ -134,6 +142,7 @@
   bool is_oneshot_cancel_key(uint16_t keycode) {
       switch (keycode) {
       case KC_CLEAR:
+      case LY_NAV:
           return true;
       default:
           return false;
@@ -231,56 +240,49 @@
               unregister_code(KC_2);
             }
             break;
-        case LY_NAV:
-            if (record->event.pressed && get_mods()) {
-                keyrecord_t custom_record = {0};
-                custom_record.event.pressed = true;
+        // case LY_NAV:
+        //     if (record->event.pressed && get_mods()) {
+        //         keyrecord_t custom_record = {0};
+        //         custom_record.event.pressed = true;
 
-                update_oneshot(
-                    &os_shft_state, KC_LSFT, OS_SHFT,
-                    KC_CLEAR, &custom_record
-                );
-                update_oneshot(
-                    &os_ctrl_state, KC_LCTL, OS_CTRL,
-                    KC_CLEAR, &custom_record
-                );
-                update_oneshot(
-                    &os_alt_state, KC_LALT, OS_ALT,
-                    KC_CLEAR, &custom_record
-                );
-                update_oneshot(
-                    &os_cmd_state, KC_LCMD, OS_CMD,
-                    KC_CLEAR, &custom_record
-                );
+        //         update_oneshot(
+        //             &os_ctrl_state, KC_LCTL, OS_CTRL,
+        //             KC_CLEAR, &custom_record
+        //         );
+        //         update_oneshot(
+        //             &os_alt_state, KC_LALT, OS_ALT,
+        //             KC_CLEAR, &custom_record
+        //         );
+        //         update_oneshot(
+        //             &os_cmd_state, KC_LCMD, OS_CMD,
+        //             KC_CLEAR, &custom_record
+        //         );
 
-                return false;
-            }
+        //         return false;
+        //     }
       }
 
       return true;
   }
 
-  uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-      switch (keycode) {
-          case LY_NAV:
-          case LY_SYM:
-          case LY_NUM:
-          case LY_FUNC:
-              return 120;
-          default:
-              return TAPPING_TERM;
-      }
-  }
+  // Tap Hold
+  const char chordal_hold_layout[MATRIX_ROWS][MATRIX_COLS] PROGMEM =
+    LAYOUT_split_3x5_3(
+        'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R',
+        'L', 'L', 'L', 'L', 'L',  'R', 'R', 'R', 'R', 'R',
+                  'L', 'L', 'L',  'R', 'R', 'R'
+    );
 
   layer_state_t layer_state_set_user(layer_state_t state) {
-    return update_tri_layer_state(state, NAV, SYM, MOUSE);
+     return update_tri_layer_state(state, NAV, SYM, MOUSE);
   }
 
   // Display
   #ifdef OLED_ENABLE
 
   #include "quantum.h"
-
+  
   static void render_emote(void) {
       oled_clear();  // Clears the previous text
       // Center coordinates (128x32 display)
