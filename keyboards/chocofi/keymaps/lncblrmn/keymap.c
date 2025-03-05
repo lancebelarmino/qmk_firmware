@@ -9,11 +9,11 @@
 
 #define MT_A MT(MOD_LCTL, KC_A)
 #define MT_S MT(MOD_LALT, KC_S)
-#define MT_D MT(MOD_LSFT, KC_D)
-#define MT_F MT(MOD_LGUI, KC_F)
+#define MT_D MT(MOD_LGUI, KC_D)
+#define MT_F MT(MOD_LSFT, KC_F)
 
-#define MT_J MT(MOD_RGUI, KC_J)
-#define MT_K MT(MOD_RSFT, KC_K)
+#define MT_J MT(MOD_RSFT, KC_J)
+#define MT_K MT(MOD_RGUI, KC_K)
 #define MT_L MT(MOD_RALT, KC_L)
 #define MT_BSPC MT(MOD_RCTL, KC_BSPC)
 
@@ -87,21 +87,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [NAV] = LAYOUT_split_3x5_3(
         MR_RT,   MR_SW,   MR_PRT,  MR_NXT,  MR_CT,                              XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  KC_F12,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_BSPC,
-        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+        OS_CTRL, OS_ALT,  OS_CMD,  OS_SHFT, KC_F12,                             KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_BSPC,
+        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, MR_SC,                              XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
                                    ____,    ____,    ____,            ____,     ____,    ____
     ),
 
-    // [SYM] = LAYOUT_split_3x5_3(
-    //     ____,    KC_QUES, KC_PIPE, KC_AMPR, KC_TILD,                            KC_PLUS, KC_GRV,  KC_LCBR, KC_RCBR, ____,
-    //     KC_MINS, KC_UNDS, KC_DLR,  KC_QUOT, KC_AT,                              KC_EXLM, KC_EQL,  KC_LPRN, KC_RPRN, KC_COLN,
-    //     KC_BSLS, KC_HASH, KC_ASTR, KC_DQT,  ____,                               ____,    KC_CIRC, KC_LBRC, KC_RBRC, KC_SCLN,
-    //                                ____,    ____,    ____,             ____,    ____,    ____
-    // ),
-
     [SYM] = LAYOUT_split_3x5_3(
         KC_GRV,  KC_UNDS, KC_DLR,  KC_AMPR, ____,                               ____,    KC_EXLM, KC_LCBR, KC_CIRC, KC_TILD,
-        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  KC_AT,                              KC_PLUS, KC_EQL,  KC_LPRN, KC_QUOT, KC_COLN,
+        OS_CTRL, OS_ALT,  OS_CMD,  OS_SHFT, KC_AT,                              KC_PLUS, KC_EQL,  KC_LPRN, KC_QUOT, KC_COLN,
         KC_BSLS, KC_HASH, KC_ASTR, KC_PIPE, ____,                               ____,    KC_MINS, KC_LBRC, KC_DQT,  KC_SCLN,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
@@ -141,8 +134,6 @@ const uint16_t PROGMEM xv_combo[] = {KC_X, KC_V, COMBO_END};
 
 const uint16_t PROGMEM jk_combo[] = {MT_J, MT_K, COMBO_END};
 const uint16_t PROGMEM kl_combo[] = {MT_K, MT_L, COMBO_END};
-const uint16_t PROGMEM ik_combo[] = {KC_I, MT_K, COMBO_END};
-const uint16_t PROGMEM kcomma_combo[] = {MT_K, KC_COMM, COMBO_END};
 const uint16_t PROGMEM mcomm_combo[] = {KC_M, KC_COMM, COMBO_END};
 const uint16_t PROGMEM commdot_combo[] = {KC_COMM, KC_DOT, COMBO_END};
 
@@ -164,8 +155,6 @@ combo_t key_combos[] = {
 
     [CO_JK] = COMBO(jk_combo, KC_LEFT),
     [CO_KL] = COMBO(kl_combo, KC_RGHT),
-    [CO_IK] = COMBO(ik_combo, KC_UP),
-    [CO_KCOMMA] = COMBO(kcomma_combo, KC_DOWN),
 
     [CO_EQLLPRN] = COMBO(eqllprn_combo, KC_GT),
     [CO_LCBRCIRC] = COMBO(lcbrcirc_combo, KC_RCBR),
@@ -182,6 +171,7 @@ oneshot_state os_cmd_state = os_up_unqueued;
 bool is_oneshot_cancel_key(uint16_t keycode) {
     switch (keycode) {
     case KC_CLEAR:
+    case LY_SYM:
         return true;
     default:
         return false;
@@ -281,38 +271,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           break;
       case LY_NAV:
           if (record->event.pressed && get_mods()) {
-              uint8_t mods = get_mods();
               keyrecord_t custom_record = {0};
               custom_record.event.pressed = true;
 
-              if (mods & MOD_MASK_SHIFT) {
-                  // Todo: If shift is queued, do shift + esc
-                  // if (os_shft_state != os_up_unqueued) {
-                  //     update_oneshot(
-                  //         &os_shft_state, KC_LSFT, OS_SHFT,
-                  //         KC_ESC, &custom_record
-                  //     );
-                  //     return false;
-                  // } else {
-                      
-                  // }  
-                  return true;
-              } else if (mods) {
-                  update_oneshot(
-                      &os_ctrl_state, KC_LCTL, OS_CTRL,
-                      KC_CLEAR, &custom_record
-                  );
-                  update_oneshot(
-                      &os_alt_state, KC_LALT, OS_ALT,
-                      KC_CLEAR, &custom_record
-                  );
-                  update_oneshot(
-                      &os_cmd_state, KC_LCMD, OS_CMD,
-                      KC_CLEAR, &custom_record
-                  );
-      
-                  return false;
-              }
+              update_oneshot(
+                  &os_shft_state, KC_LSFT, OS_SHFT,
+                  KC_CLEAR, &custom_record
+              );
+              update_oneshot(
+                  &os_ctrl_state, KC_LCTL, OS_CTRL,
+                  KC_CLEAR, &custom_record
+              );
+              update_oneshot(
+                  &os_alt_state, KC_LALT, OS_ALT,
+                  KC_CLEAR, &custom_record
+              );
+              update_oneshot(
+                  &os_cmd_state, KC_LCMD, OS_CMD,
+                  KC_CLEAR, &custom_record
+              );
+
+            return false;
           }
     }
     return true;
@@ -328,9 +307,25 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+bool get_permissive_hold(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+      case LY_NAV:
+          return false;
+      default:
+          return true;
+  }
+}
+
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+      case LY_NAV:
+          return true;
+      default:
+          return false;
+  }
+}
+
 char chordal_hold_handedness(keypos_t key) {
-    // On split keyboards, typically, the first half of the rows are on the
-    // left, and the other half are on the right.
     return key.row < MATRIX_ROWS / 2 ? 'L' : 'R';
 }
 
