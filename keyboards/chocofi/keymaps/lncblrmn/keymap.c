@@ -10,13 +10,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [BASE] = LAYOUT_split_3x5_3(
         KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,
         MT_A,    MT_S,    MT_D,    MT_F,    KC_G,                               KC_H,    MT_J,    MT_K,    MT_L,    MT_BSPC,
-        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                                   QK_REP,  LY_NAV,  KC_SPC,           KC_ENT,  LY_SYM,  LY_FCT
+        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                               KC_N,    KC_M,    KC_COMM, KC_DOT,  MR_DIR,
+                                   KC_ESC,  LY_NAV,  KC_SPC,           KC_ENT,  LY_SYM,  LY_FCT
     ),
 
     [NAV] = LAYOUT_split_3x5_3(
         MR_RT,   MR_CT,   MR_PRT,  MR_NXT,  XXXX,                               XXXX,    MR_ZO,   XXXX,    MR_ZI,   XXXX,
-        KC_LCTL, KC_LALT, KC_LSFT, KC_LGUI, MR_SC,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
+        OS_CTRL, OS_ALT,  OS_SHFT, OS_CMD,  MR_SC,                              KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, ____,
         XXXX,    MR_SW,   MR_AT,   MR_ST,   XXXX,                               MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
@@ -31,7 +31,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [MOUSE] = LAYOUT_split_3x5_3(
         MR_RT,   MR_SW,   MR_PRT,  MR_NXT,  MR_CT,                              XXXX,    KC_PGDN, KC_MS_U, KC_PGUP, XXXX,
         KC_LSFT, KC_LGUI, KC_BTN1, KC_BTN2, XXXX,                               XXXX,    KC_MS_L, KC_MS_D, KC_MS_R, XXXX,
-        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               XXXX,    KC_PGDN, KC_PGUP, XXXX,    XXXX,
+        MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,                               MR_WH_L, KC_WH_D, KC_WH_U, MR_WH_R, XXXX,
                                    ____,    ____,    ____,             ____,    ____,    ____
     ),
 
@@ -360,7 +360,7 @@ combo_t key_combos[] = {
     [CO_WR] = COMBO(wr_combo, KC_F3),
     [CO_SD] = COMBO(sd_combo, KC_TAB),
     [CO_DF] = COMBO(df_combo, KC_BSPC),
-    [CO_SF] = COMBO(sf_combo, MR_F),
+    [CO_SF] = COMBO(sf_combo, QK_REP),
     [CO_XC] = COMBO(xc_combo, MR_C),
     [CO_CV] = COMBO(cv_combo, MR_X),
     [CO_XV] = COMBO(xv_combo, MR_V),
@@ -379,8 +379,8 @@ combo_t key_combos[] = {
     [CO_IK] = COMBO(ik_combo, KC_DQT),
     [CO_OL] = COMBO(ol_combo, KC_SCLN),
     [CO_JM] = COMBO(jm_combo, KC_LT),
-    [CO_KCOMM] = COMBO(kcomm_combo, KC_GT),
-    [CO_LDOT] = COMBO(ldot_combo, MR_DIR),
+    [CO_KCOMM] = COMBO(kcomm_combo, KC_SLSH),
+    [CO_LDOT] = COMBO(ldot_combo, KC_GT),
 
     [CO_NAVSYM] = COMBO(navsym_combo, LY_MSE),
 };

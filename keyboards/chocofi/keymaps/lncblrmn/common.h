@@ -1,9 +1,8 @@
 #pragma once
 
-#define LY_NAV LT(NAV, KC_ESC)
-#define LY_SYM LT(SYM, KC_CAPS)
-#define LY_NUM LT(NUM, KC_ENT)
-#define LY_FCT MO(FUNC)
+#define LY_NAV MO(NAV)
+#define LY_SYM MO(SYM)
+#define LY_FCT LT(FUNC, KC_CAPS)
 #define LY_MSE TT(MOUSE)
 
 #define MT_A MT(MOD_LCTL, KC_A)
@@ -65,9 +64,9 @@ enum keycodes {
     MR_DIR,
 
     // One Shot Keys
-    OS_SHFT,
     OS_CTRL,
     OS_ALT,
+    OS_SHFT,
     OS_CMD,
 };
 
